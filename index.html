@@ -1,0 +1,100 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Whitelabel PFP Maker</title>
+  <link rel="icon" type="image/png" href="PACO-pfp.png" />
+  <link rel="apple-touch-icon" href="PACO-pfp.png" />
+  <link rel="preload" href="assets/base/PACO.png" as="image" type="image/png" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="mobile-fix.css" />
+</head>
+<body>
+  <header class="restaurant-header">
+    <div class="restaurant-logo">
+      <img src="PACO-THE-CHICKEN.png" alt="Logo" class="header-logo" />
+      <div class="restaurant-name">
+        <h1 class="palace-title">PFP Maker</h1>
+        <p class="palace-tagline">Build your own</p>
+      </div>
+    </div>
+    <div class="restaurant-stats">
+      <div class="stat-item">
+        <div class="stat-number" id="ordersServed">0</div>
+        <div class="stat-label">Orders Served</div>
+      </div>
+    </div>
+    <div class="restaurant-hours">
+      <img src="abstract.png" alt="Abstract" class="abstract-logo" />
+      <span class="abstract-text">Powered by Abstract</span>
+    </div>
+  </header>
+
+  <div class="restaurant-container" id="main-content">
+    <section class="tab-panel active" id="generator-panel" role="tabpanel" aria-labelledby="generator-tab">
+      <div class="pfp-generator" role="main" aria-labelledby="generator-title">
+        <div class="generator-content">
+          <div class="menu-section-compact">
+            <div class="menu-category info-category">
+              <h3 class="category-title"><span class="category-icon">🏪</span><span>Franchise Info</span></h3>
+              <div class="info-content-compact">
+                <div class="franchise-compact" onclick="copyContract()">
+                  <code class="contract-address">0x98DC57...20B2528</code>
+                  <span class="copy-hint">📋 Copy</span>
+                </div>
+                <div class="social-buttons-compact">
+                  <a class="social-icon" onclick="openTwitter()" aria-label="X (Twitter)">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="menu-category">
+              <h3 class="category-title"><span class="category-icon">🧢</span><span>Toppings</span></h3>
+              <div class="menu-grid" id="hatMenuItems"></div>
+            </div>
+
+            <div class="menu-category">
+              <h3 class="category-title"><span class="category-icon">🥤</span><span>Sides</span></h3>
+              <div class="menu-grid" id="itemMenuItems"></div>
+            </div>
+
+            <div class="menu-category">
+              <h3 class="category-title"><span class="category-icon">⚡</span><span>Quick Combos</span></h3>
+              <div class="combo-buttons">
+                <button class="combo-btn-compact" onclick="quickOrder('sheriff','revolver')">🤠 Sheriff</button>
+                <button class="combo-btn-compact" onclick="quickOrder('crown','cash')">👑 King</button>
+                <button class="combo-btn-compact" onclick="quickOrder('party-hat','chicken-sandwich')">🎉 Party</button>
+                <button class="combo-btn-compact special" onclick="randomizePFP()">🎲 Surprise</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="preview-section">
+            <div class="preview-header">
+              <h2 id="generator-title">🐔 Build Your Paco</h2>
+            </div>
+            <div class="canvas-container">
+              <canvas id="pfpCanvas" width="1600" height="1600" aria-label="Your custom Paco chicken preview" role="img">Your browser doesn't support canvas.</canvas>
+            </div>
+            <div class="order-summary-compact">
+              <div class="order-items"></div>
+              <div class="order-total"><span class="total-amount">/usr/bin/bash.01</span></div>
+            </div>
+            <div class="action-buttons">
+              <button class="place-order-btn primary" onclick="downloadPFP()">📋 DOWNLOAD</button>
+              <button class="copy-btn primary" onclick="copyPFPToClipboard()">📋 COPY</button>
+              <button class="clear-order-btn secondary" onclick="clearOrder()">🗑️ CLEAR</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div id="notification" class="notification" role="alert" aria-live="polite"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
