@@ -1,100 +1,164 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Whitelabel PFP Maker</title>
-  <link rel="icon" type="image/png" href="PACO-pfp.png" />
-  <link rel="apple-touch-icon" href="PACO-pfp.png" />
-  <link rel="preload" href="assets/base/PACO.png" as="image" type="image/png" />
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="mobile-fix.css" />
+  <title>MOJO PFP Maker</title>
+  <link rel="icon" type="image/png" href="MOJO-pfp.png" />
+  <link rel="apple-touch-icon" href="MOJO-pfp.png" />
+  <link rel="preload" href="assets/BASE/MOJO BODY.png" as="image" type="image/png" />
+  <link rel="stylesheet" href="single-page.css" />
 </head>
 <body>
-  <header class="restaurant-header">
-    <div class="restaurant-logo">
-      <img src="PACO-THE-CHICKEN.png" alt="Logo" class="header-logo" />
-      <div class="restaurant-name">
-        <h1 class="palace-title">PFP Maker</h1>
-        <p class="palace-tagline">Build your own</p>
-      </div>
-    </div>
-    <div class="restaurant-stats">
-      <div class="stat-item">
-        <div class="stat-number" id="ordersServed">0</div>
-        <div class="stat-label">Orders Served</div>
-      </div>
-    </div>
-    <div class="restaurant-hours">
-      <img src="abstract.png" alt="Abstract" class="abstract-logo" />
-      <span class="abstract-text">Powered by Abstract</span>
-    </div>
-  </header>
-
-  <div class="restaurant-container" id="main-content">
-    <section class="tab-panel active" id="generator-panel" role="tabpanel" aria-labelledby="generator-tab">
-      <div class="pfp-generator" role="main" aria-labelledby="generator-title">
-        <div class="generator-content">
-          <div class="menu-section-compact">
-            <div class="menu-category info-category">
-              <h3 class="category-title"><span class="category-icon">🏪</span><span>Franchise Info</span></h3>
-              <div class="info-content-compact">
-                <div class="franchise-compact" onclick="copyContract()">
-                  <code class="contract-address">0x98DC57...20B2528</code>
-                  <span class="copy-hint">📋 Copy</span>
-                </div>
-                <div class="social-buttons-compact">
-                  <a class="social-icon" onclick="openTwitter()" aria-label="X (Twitter)">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <div class="menu-category">
-              <h3 class="category-title"><span class="category-icon">🧢</span><span>Toppings</span></h3>
-              <div class="menu-grid" id="hatMenuItems"></div>
-            </div>
-
-            <div class="menu-category">
-              <h3 class="category-title"><span class="category-icon">🥤</span><span>Sides</span></h3>
-              <div class="menu-grid" id="itemMenuItems"></div>
-            </div>
-
-            <div class="menu-category">
-              <h3 class="category-title"><span class="category-icon">⚡</span><span>Quick Combos</span></h3>
-              <div class="combo-buttons">
-                <button class="combo-btn-compact" onclick="quickOrder('sheriff','revolver')">🤠 Sheriff</button>
-                <button class="combo-btn-compact" onclick="quickOrder('crown','cash')">👑 King</button>
-                <button class="combo-btn-compact" onclick="quickOrder('party-hat','chicken-sandwich')">🎉 Party</button>
-                <button class="combo-btn-compact special" onclick="randomizePFP()">🎲 Surprise</button>
-              </div>
-            </div>
+  <!-- Single Page Layout -->
+  <div class="app-container">
+    
+    <!-- Header -->
+    <header class="main-header">
+      <div class="header-content">
+        <div class="brand-section">
+          <img src="TITLE.png" alt="MOJO PFP Maker" class="title-img" />
+        </div>
+        
+        <div class="header-actions">
+          <div class="social-links">
+            <a href="#" class="social-btn" title="Telegram">
+              <img src="TG BUTTON.png" alt="Telegram" />
+            </a>
+            <a href="#" class="social-btn" title="Twitter">
+              <img src="X BUTTON.png" alt="Twitter" />
+            </a>
+            <a href="#" class="social-btn" title="Chart">
+              <img src="CHART BUTTON.png" alt="Chart" />
+            </a>
           </div>
-
-          <div class="preview-section">
-            <div class="preview-header">
-              <h2 id="generator-title">🐔 Build Your Paco</h2>
-            </div>
-            <div class="canvas-container">
-              <canvas id="pfpCanvas" width="1600" height="1600" aria-label="Your custom Paco chicken preview" role="img">Your browser doesn't support canvas.</canvas>
-            </div>
-            <div class="order-summary-compact">
-              <div class="order-items"></div>
-              <div class="order-total"><span class="total-amount">/usr/bin/bash.01</span></div>
-            </div>
-            <div class="action-buttons">
-              <button class="place-order-btn primary" onclick="downloadPFP()">📋 DOWNLOAD</button>
-              <button class="copy-btn primary" onclick="copyPFPToClipboard()">📋 COPY</button>
-              <button class="clear-order-btn secondary" onclick="clearOrder()">🗑️ CLEAR</button>
-            </div>
+          
+          <div class="stats-mini">
+            <span class="stat-item">
+              <span class="stat-number" id="ordersServed">0</span>
+              <span class="stat-label">Minted</span>
+            </span>
           </div>
+          
+          <button class="btn btn-wallet" id="walletBtn" onclick="connectWallet()">
+            <img src="abstract.png" alt="Abstract" class="wallet-logo" /> Connect Wallet
+          </button>
         </div>
       </div>
-    </section>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="main-content">
+      
+      <!-- Generator Section -->
+      <section class="generator-section">
+        
+        <!-- Canvas Preview -->
+        <div class="canvas-container">
+          <div class="canvas-header">
+            <img src="MOJO GALLERY TEXT.png" alt="MOJO Gallery" class="gallery-title" />
+          </div>
+          
+          <div class="canvas-wrapper">
+            <div class="canvas-glow"></div>
+            <canvas id="pfpCanvas" width="400" height="400" aria-label="Your custom MOJO NFT preview"></canvas>
+          </div>
+          
+          <div class="canvas-actions">
+            <button class="btn btn-secondary" onclick="downloadPFP()">💾 Download</button>
+            <button class="btn btn-primary mint-btn" id="mintBtn" onclick="mintNFT()">🎨 Mint NFT</button>
+          </div>
+          
+          <div class="price-display">
+            <div class="price-amount" id="totalMojoPrice">2,500 MOJO</div>
+            <div class="price-usd" id="totalUsdPrice">≈ $0.50 USD</div>
+          </div>
+        </div>
+
+        <!-- Traits Panel -->
+        <div class="traits-container">
+          <div class="traits-header">
+            <h2>Customize Your MOJO</h2>
+            <div class="quick-actions">
+              <button class="btn btn-ghost" onclick="randomizePFP()">🎲 Random</button>
+              <button class="btn btn-ghost" onclick="clearOrder()">🗑️ Reset</button>
+            </div>
+          </div>
+          
+          <div class="traits-grid">
+            
+            <!-- Background -->
+            <div class="trait-section">
+              <div class="trait-header">
+                <span class="trait-icon">🌅</span>
+                <span class="trait-name">Background</span>
+              </div>
+              <div class="trait-options" id="backgroundMenuItems"></div>
+            </div>
+
+            <!-- Clothes -->
+            <div class="trait-section">
+              <div class="trait-header">
+                <span class="trait-icon">👔</span>
+                <span class="trait-name">Clothes</span>
+              </div>
+              <div class="trait-options" id="clothesMenuItems"></div>
+            </div>
+
+            <!-- Eyes -->
+            <div class="trait-section">
+              <div class="trait-header">
+                <span class="trait-icon">👀</span>
+                <span class="trait-name">Eyes</span>
+              </div>
+              <div class="trait-options" id="eyesMenuItems"></div>
+            </div>
+
+            <!-- Head -->
+            <div class="trait-section">
+              <div class="trait-header">
+                <span class="trait-icon">🎩</span>
+                <span class="trait-name">Head</span>
+              </div>
+              <div class="trait-options" id="headMenuItems"></div>
+            </div>
+
+            <!-- Mouth -->
+            <div class="trait-section">
+              <div class="trait-header">
+                <span class="trait-icon">😊</span>
+                <span class="trait-name">Mouth</span>
+              </div>
+              <div class="trait-options" id="mouthMenuItems"></div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Large MOJO Logo positioned under traits container -->
+        <div class="large-logo-positioned">
+          <img src="LOGO SMALL.png" alt="MOJO" class="large-mojo-logo" />
+        </div>
+      
+      </section>
+
+    </main>
+
+
   </div>
 
+  <!-- Snowflake Animation -->
+  <div class="snowflake-container">
+    <img src="MARQUEE.png" alt="" class="snowflake-strip" />
+    <img src="MARQUEE.png" alt="" class="snowflake-strip" />
+    <img src="MARQUEE.png" alt="" class="snowflake-strip" />
+  </div>
+
+  <!-- Notification -->
   <div id="notification" class="notification" role="alert" aria-live="polite"></div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+  <script src="config.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

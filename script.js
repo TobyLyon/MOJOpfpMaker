@@ -1,4 +1,4 @@
-// ===== PACO'S CHICKEN PALACE - RESTAURANT SCRIPT =====
+// ===== MOJO NFT PFP MAKER - WEB3 SCRIPT =====
 
 // === SUPABASE INTEGRATION ===
 // Load Supabase client dynamically for live order tracking
@@ -24,14 +24,42 @@ let audioEnabled = true;
 window.audioEnabled = true; // Make available globally for game
 let isLoaded = false;
 
-// Current order state
+// Current NFT configuration - Updated for new asset structure
 const currentOrder = {
-    base: 'PACO',
-    hat: '',
-    hatName: 'No Topping',
-    item: '',
-    itemName: 'No Side'
+    base: 'MOJO BODY',
+    background: '',
+    backgroundName: 'No Background',
+    clothes: '',
+    clothesName: 'No Clothes',
+    eyes: 'NORMAL',
+    eyesName: 'Normal Eyes',
+    head: '',
+    headName: 'No Headwear',
+    mouth: 'NORMAL',
+    mouthName: 'Normal Mouth'
 };
+
+// Web3 and NFT state
+let web3Provider = null;
+let signer = null;
+let userAddress = null;
+let nftContract = null;
+
+// NFT Contract Configuration (loaded from config.js)
+const NFT_CONTRACT_ADDRESS = window.APP_CONFIG?.NFT_CONTRACT_ADDRESS || "0xYourMojoNFTContractAddress";
+const PACO_FEE_WALLET = window.APP_CONFIG?.PACO_FEE_WALLET || ""; // Paco platform fee wallet (set in config.js)
+const PLATFORM_FEE_RATE = window.APP_CONFIG?.PLATFORM_FEE_RATE || 0.05; // 5% platform fee
+const NFT_CONTRACT_ABI = [
+    // Basic ERC721 + minting functions
+    "function mint(address to, string memory tokenURI) public payable returns (uint256)",
+    "function totalSupply() public view returns (uint256)",
+    "function balanceOf(address owner) public view returns (uint256)",
+    "function tokenURI(uint256 tokenId) public view returns (string memory)",
+    "function ownerOf(uint256 tokenId) public view returns (address)",
+    "function tokensOfOwner(address owner) public view returns (uint256[] memory)",
+    "function mintPrice() public view returns (uint256)",
+    "function mintingActive() public view returns (bool)"
+];
 
 // Konami code state
 let konamiCode = [];
@@ -47,68 +75,138 @@ let audioContext;
 // Constants
 const konamiSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
 
-// Menu Items with restaurant names and descriptions
+// Menu Items updated for MOJO asset structure
 const menuItems = {
-    hats: [
-        { id: '', name: 'No Topping', description: 'Plain and simple, just like you ordered', price: 0.00, emoji: '🚫' },
-        { id: 'sheriff', name: 'Sheriff Special', description: 'Smoky BBQ flavor with a badge of honor', price: 0.50, emoji: '🤠' },
-        { id: 'abs-snapbck', name: 'Chain Link Crispy', description: 'Blockchain seasoned with crypto spices', price: 0.50, emoji: '🧢' },
-        { id: 'crown', name: 'Royal Roast', description: 'Fit for crypto royalty, golden and tender', price: 0.50, emoji: '👑' },
-        { id: 'sombrero', name: 'Fiesta Fiery', description: 'Spicy Mexican-style with jalapeño kick', price: 0.50, emoji: '🌶️' },
-        { id: 'bucket-hat', name: 'Bucket o\' Bites', description: 'Classic comfort food, family sized', price: 0.50, emoji: '🪣' },
-        { id: 'durag-black', name: 'Smooth & Savory', description: 'Silky smooth with urban flavor', price: 0.50, emoji: '🌟' },
-        { id: 'durag-red', name: 'Spicy Silk', description: 'Red hot flavor with smooth finish', price: 0.50, emoji: '🌶️' },
-        { id: 'rasta', name: 'Island Jerk', description: 'Caribbean spiced with reggae vibes', price: 0.50, emoji: '🌴' },
-        { id: 'halo', name: 'Heavenly Herb', description: 'Angel-blessed with divine seasoning', price: 0.50, emoji: '😇' },
-        { id: 'demon', name: 'Devil\'s Dare', description: 'Dangerously spicy, handle with care', price: 0.50, emoji: '😈' },
-        { id: 'party-hat', name: 'Celebration Crunch', description: 'Party-time flavor with confetti crumbs', price: 0.50, emoji: '🎉' },
-        { id: 'habibi', name: 'Habibi Heat', description: 'Middle Eastern spiced with desert fire', price: 0.50, emoji: '🔥' },
-        { id: 'blonde-wig', name: 'Golden Crispy', description: 'Blonde and bold, crispy perfection', price: 0.50, emoji: '💛' },
-        { id: 'rice-hat', name: 'Asian Fusion', description: 'Traditional flavors with modern twist', price: 0.50, emoji: '🍚' },
-        { id: 'pudgy-shades', name: 'Cool Cat Combo', description: 'Laid-back flavor with attitude', price: 0.50, emoji: '😎' },
-        { id: 'nerd', name: 'Brain Food Special', description: 'Smart choice for intellectual taste', price: 0.50, emoji: '🤓' },
-        { id: 'ski-mask', name: 'Mystery Meat', description: 'Secret recipe, unknown ingredients', price: 0.50, emoji: '🎿' },
-        { id: 'pwease', name: 'Pretty Please', description: 'Cute and sweet, impossible to resist', price: 0.50, emoji: '🥺' },
-        { id: 'adventure-time', name: 'Adventure Bite', description: 'Mathematical flavor for brave eaters', price: 0.50, emoji: '⚔️' },
-        { id: 'viking', name: 'Norse Warrior', description: 'Savage flavor from the frozen north', price: 0.50, emoji: '⚔️' },
-        { id: 'space-helmet', name: 'Galaxy Gourmet', description: 'Out-of-this-world flavor from the cosmos', price: 0.50, emoji: '🚀' },
-        { id: 'cyclone', name: 'Cyclops', description: 'One-eyed flavor that sees straight through to your soul', price: 0.50, emoji: '👁️' },
-        { id: 'fishing-hat', name: 'Angler\'s Catch', description: 'Fresh from the stream with crispy coating', price: 0.50, emoji: '🎣' },
-        { id: 'proliferation', name: 'SMP', description: 'Explosive flavor that multiplies in your mouth', price: 0.50, emoji: '🟢' },
-        { id: 'ibiza-boss', name: 'Ibiza Boss', description: 'VIP flavor from the Mediterranean party scene', price: 0.50, emoji: '🏖️' }
+    backgrounds: [
+        { id: '', name: 'None', description: 'No background', price: 0.00, emoji: '🚫' },
+        { id: 'BLUE', name: 'Blue', description: 'Blue atmosphere', price: 0.25, emoji: '🌌' },
+        { id: 'CAVE', name: 'Cave', description: 'Underground setting', price: 0.25, emoji: '🕳️' },
+        { id: 'CLIFF', name: 'Cliff', description: 'Mountain cliff', price: 0.25, emoji: '🏔️' },
+        { id: 'GREEN ', name: 'Green', description: 'Forest vibes', price: 0.25, emoji: '🌲' },
+        { id: 'RED', name: 'Red', description: 'Fiery atmosphere', price: 0.25, emoji: '🔥' },
+        { id: 'SHRINE', name: 'Shrine', description: 'Temple grounds', price: 0.25, emoji: '⛩️' },
+        { id: 'TRAIN', name: 'Train', description: 'Moving train', price: 0.25, emoji: '🚂' }
     ],
-    items: [
-        { id: '', name: 'No Side', description: 'Keep it simple, chicken only', price: 0.00, emoji: '🚫' },
-        { id: 'revolver', name: 'Six-Shooter Sauce', description: 'Hot sauce that packs a punch', price: 1.00, emoji: '🌶️' },
-        { id: 'blunt', name: 'Rolled Wrap', description: 'Tightly wrapped with secret herbs', price: 1.00, emoji: '🌿' },
-        { id: 'crack-pipe', name: 'Crack Cola', description: 'Addictively refreshing drink', price: 1.00, emoji: '🥤' },
-        { id: 'cash', name: 'Money Munchies', description: 'Green bills made of lettuce', price: 1.00, emoji: '💰' },
-        { id: 'abs-coin', name: 'Crypto Coins', description: 'Golden onion rings, digital delicious', price: 1.00, emoji: '🪙' },
-        { id: 'joint', name: 'Joint Ventures', description: 'Twisted breadsticks, business style', price: 1.00, emoji: '🥖' },
-        { id: 'wand', name: 'Magic Sticks', description: 'Enchanted drumsticks with special powers', price: 1.00, emoji: '✨' },
-        { id: 'chicken-sandwich', name: 'Mini-Me Sandwich', description: 'Chicken sandwich for your chicken', price: 1.00, emoji: '🥪' },
-        { id: 'knife', name: 'Cutting Edge Cutlery', description: 'Premium dining utensils', price: 1.00, emoji: '🍴' },
-        { id: 'fork', name: 'Fine Dining Fork', description: 'Elegant eating experience', price: 1.00, emoji: '🍽️' },
-        { id: 'taco', name: 'Taco Tuesday', description: 'Mexican street food, chicken style', price: 1.00, emoji: '🌮' },
-        { id: 'boba-tea', name: 'Bubble Tea Bliss', description: 'Chewy pearls in sweet chicken broth', price: 1.00, emoji: '🧋' },
-        { id: 'flower', name: 'Garden Fresh', description: 'Organic blooms with herbal essence', price: 1.00, emoji: '🌸' },
-        { id: 'pyn', name: 'Paco Zyns', description: 'High-speed flavor express', price: 1.00, emoji: '🚂' },
-        { id: 'psp', name: 'Portable Gaming', description: 'Retro gaming fuel for chicken champions', price: 1.00, emoji: '🎮' },
-        { id: '40-oz', name: 'Forty Ounce', description: 'Big bottle, bigger flavor', price: 1.00, emoji: '🍺' },
-        { id: 'purse', name: 'Designer Bag', description: 'Stylish storage for leftover nuggets', price: 1.00, emoji: '👜' },
-        { id: 'ibiza cup', name: 'Ibiza Cup', description: 'Premium party beverage for the ultimate experience', price: 1.00, emoji: '🥂' }
+    clothes: [
+        { id: 'NONE', name: 'None', description: 'No clothing', price: 0, mojoPrice: 0, emoji: '🚫' },
+        { id: 'ABSTRACT KIMONO', name: 'Abstract Kimono', description: 'Artistic wear', price: 1.00, mojoPrice: 1000, emoji: '👘' },
+        { id: 'ABSTRACT SHIRT', name: 'Abstract Shirt', description: 'Modern design', price: 0.75, mojoPrice: 750, emoji: '👕' },
+        { id: 'APRON BLACK', name: 'Black Apron', description: 'Chef style', price: 0.50, mojoPrice: 500, emoji: '👨‍🍳' },
+        { id: 'APRON BLUE', name: 'Blue Apron', description: 'Kitchen pro', price: 0.50, mojoPrice: 500, emoji: '👩‍🍳' },
+        { id: 'BLACK BOWTIE SUIT', name: 'Black Suit', description: 'Formal wear', price: 1.50, mojoPrice: 1500, emoji: '🤵' },
+        { id: 'BLUE SUIT', name: 'Blue Suit', description: 'Business style', price: 1.25, mojoPrice: 1250, emoji: '💼' },
+        { id: 'KIMONO BLACK', name: 'Black Kimono', description: 'Traditional Japanese elegance', price: 1.25, mojoPrice: 1250, emoji: '👘' },
+        { id: 'KIMONO BLUE', name: 'Blue Kimono', description: 'Serene traditional wear', price: 1.25, mojoPrice: 1250, emoji: '👘' },
+        { id: 'KIMONO PINK', name: 'Pink Kimono', description: 'Cherry blossom style', price: 1.25, mojoPrice: 1250, emoji: '👘' },
+        { id: 'KIMONO YELLOW', name: 'Yellow Kimono', description: 'Golden sunrise style', price: 1.25, mojoPrice: 1250, emoji: '👘' },
+        { id: 'PUDGY SHIRT', name: 'Pudgy Shirt', description: 'Cute and comfy', price: 0.75, mojoPrice: 750, emoji: '👕' },
+        { id: 'SCARF BLACK', name: 'Black Scarf', description: 'Cozy winter accessory', price: 0.50, mojoPrice: 500, emoji: '🧣' },
+        { id: 'SCARF GRAY', name: 'Gray Scarf', description: 'Neutral warmth', price: 0.50, mojoPrice: 500, emoji: '🧣' },
+        { id: 'SCARF GREEN', name: 'Green Scarf', description: 'Forest fresh style', price: 0.50, mojoPrice: 500, emoji: '🧣' },
+        { id: 'SCARF RED', name: 'Red Scarf', description: 'Bold winter fashion', price: 0.50, mojoPrice: 500, emoji: '🧣' },
+        { id: 'SCARF YELLOW', name: 'Yellow Scarf', description: 'Sunny winter vibes', price: 0.50, mojoPrice: 500, emoji: '🧣' },
+        { id: 'SHIRT BLACK', name: 'Black Shirt', description: 'Classic casual wear', price: 0.50, mojoPrice: 500, emoji: '👕' },
+        { id: 'SHIRT GRAY', name: 'Gray Shirt', description: 'Comfortable everyday', price: 0.50, mojoPrice: 500, emoji: '👕' },
+        { id: 'SHIRT RED', name: 'Red Shirt', description: 'Bold statement piece', price: 0.50, mojoPrice: 500, emoji: '👕' },
+        { id: 'SHIRT WHITE GREEN', name: 'White Green Shirt', description: 'Fresh color combo', price: 0.60, mojoPrice: 600, emoji: '👕' },
+        { id: 'SHIRT WHITE ORANGE', name: 'White Orange Shirt', description: 'Vibrant design', price: 0.60, mojoPrice: 600, emoji: '👕' },
+        { id: 'SOLANA SHIRT', name: 'Solana Shirt', description: 'Crypto enthusiast gear', price: 0.75, mojoPrice: 750, emoji: '☀️' },
+        { id: 'SUIT', name: 'Formal Suit', description: 'Classic business attire', price: 1.00, mojoPrice: 1000, emoji: '🕴️' },
+        { id: 'TACTICAL SUIT BLACK', name: 'Black Tactical Suit', description: 'Military precision', price: 1.75, mojoPrice: 1750, emoji: '🥷' },
+        { id: 'TACTICAL SUIT BLUE', name: 'Blue Tactical Suit', description: 'Professional operations', price: 1.75, mojoPrice: 1750, emoji: '👮' },
+        { id: 'TACTICAL SUIT CAMO', name: 'Camo Tactical Suit', description: 'Stealth operations', price: 1.75, mojoPrice: 1750, emoji: '🪖' },
+        { id: 'TACTICAL SUIT GREEN', name: 'Green Tactical Suit', description: 'Field operations', price: 1.75, mojoPrice: 1750, emoji: '🎖️' },
+        { id: 'TURTLE NECK BLACK', name: 'Black Turtleneck', description: 'Sleek modern style', price: 0.75, mojoPrice: 750, emoji: '🐢' },
+        { id: 'TURTLE NECK GRAY', name: 'Gray Turtleneck', description: 'Sophisticated comfort', price: 0.75, mojoPrice: 750, emoji: '🐢' },
+        { id: 'TURTLE NECK GREEN', name: 'Green Turtleneck', description: 'Nature-inspired style', price: 0.75, mojoPrice: 750, emoji: '🐢' },
+        { id: 'TURTLE NECK RED', name: 'Red Turtleneck', description: 'Bold fashion choice', price: 0.75, mojoPrice: 750, emoji: '🐢' },
+        { id: 'TURTLE NECK WHITE', name: 'White Turtleneck', description: 'Clean minimalist look', price: 0.75, mojoPrice: 750, emoji: '🐢' }
+    ],
+    eyes: [
+        { id: 'NORMAL', name: 'Normal Eyes', description: 'Standard friendly look', price: 0, mojoPrice: 0, emoji: '👀' },
+        { id: 'ANGRY', name: 'Angry Eyes', description: 'Fierce and determined', price: 0.50, mojoPrice: 500, emoji: '😠' },
+        { id: 'BORED', name: 'Bored Eyes', description: 'Unimpressed expression', price: 0.50, mojoPrice: 500, emoji: '😑' },
+        { id: 'CLEAR GLASS', name: 'Clear Glasses', description: 'Intellectual vibes', price: 0.75, mojoPrice: 750, emoji: '🤓' },
+        { id: 'CLOSE', name: 'Closed Eyes', description: 'Peaceful meditation', price: 0.50, mojoPrice: 500, emoji: '😌' },
+        { id: 'EYE SHINE', name: 'Eye Shine', description: 'Bright and alert', price: 0.75, mojoPrice: 750, emoji: '✨' },
+        { id: 'GLASSES BLACK', name: 'Black Glasses', description: 'Cool and smart', price: 0.75, mojoPrice: 750, emoji: '😎' },
+        { id: 'GLASSES BLUE', name: 'Blue Glasses', description: 'Stylish blue frames', price: 0.75, mojoPrice: 750, emoji: '🔵' },
+        { id: 'GLASSES GREEN', name: 'Green Glasses', description: 'Nature-inspired frames', price: 0.75, mojoPrice: 750, emoji: '🟢' },
+        { id: 'GLASSES ORANGE', name: 'Orange Glasses', description: 'Bold orange style', price: 0.75, mojoPrice: 750, emoji: '🟠' },
+        { id: 'GLASSES YELLOW', name: 'Yellow Glasses', description: 'Sunny yellow frames', price: 0.75, mojoPrice: 750, emoji: '🟡' },
+        { id: 'HUH', name: 'Confused Eyes', description: 'Puzzled expression', price: 0.50, mojoPrice: 500, emoji: '🤔' },
+        { id: 'LOWE LID', name: 'Lower Lid', description: 'Sleepy expression', price: 0.50, mojoPrice: 500, emoji: '😪' },
+        { id: 'SAD', name: 'Sad Eyes', description: 'Melancholy mood', price: 0.50, mojoPrice: 500, emoji: '😢' },
+        { id: 'SQUINT', name: 'Squinting Eyes', description: 'Focused concentration', price: 0.50, mojoPrice: 500, emoji: '😤' },
+        { id: 'STAR SHINE', name: 'Star Shine', description: 'Magical sparkle', price: 1.00, mojoPrice: 1000, emoji: '✨' },
+        { id: 'SURPRISED', name: 'Surprised Eyes', description: 'Wide-eyed wonder', price: 0.50, mojoPrice: 500, emoji: '😲' },
+        { id: 'TEARY', name: 'Teary Eyes', description: 'Emotional moment', price: 0.50, mojoPrice: 500, emoji: '🥺' },
+        { id: 'WINK', name: 'Winking Eye', description: 'Playful charm', price: 0.50, mojoPrice: 500, emoji: '😉' }
+    ],
+    heads: [
+        { id: '', name: 'No Headwear', description: 'Clean and minimal look', price: 0, mojoPrice: 0, emoji: '🚫' },
+        { id: 'Beanie Black', name: 'Black Beanie', description: 'Cozy winter warmth', price: 0.50, mojoPrice: 500, emoji: '🧣' },
+        { id: 'Beanie Blue', name: 'Blue Beanie', description: 'Cool arctic style', price: 0.50, mojoPrice: 500, emoji: '🧣' },
+        { id: 'Beanie Green', name: 'Green Beanie', description: 'Forest fresh style', price: 0.50, mojoPrice: 500, emoji: '🧣' },
+        { id: 'Beanie Orange', name: 'Orange Beanie', description: 'Vibrant autumn vibes', price: 0.50, mojoPrice: 500, emoji: '🧣' },
+        { id: 'Beanie Red', name: 'Red Beanie', description: 'Bold winter style', price: 0.50, mojoPrice: 500, emoji: '🧣' },
+        { id: 'BIKER HELMET', name: 'Biker Helmet', description: 'Road warrior protection', price: 1.25, mojoPrice: 1250, emoji: '🏍️' },
+        { id: 'Cap Black', name: 'Black Cap', description: 'Classic street style', price: 0.75, mojoPrice: 750, emoji: '🧢' },
+        { id: 'Cap Blue', name: 'Blue Cap', description: 'Casual blue style', price: 0.75, mojoPrice: 750, emoji: '🧢' },
+        { id: 'Cap Red', name: 'Red Cap', description: 'Bold statement piece', price: 0.75, mojoPrice: 750, emoji: '🧢' },
+        { id: 'CROWN GOLD', name: 'Golden Crown', description: 'Royal MOJO status', price: 2.00, mojoPrice: 2000, emoji: '👑' },
+        { id: 'CROWN GREEN', name: 'Emerald Crown', description: 'Mystical royalty', price: 2.00, mojoPrice: 2000, emoji: '👑' },
+        { id: 'CROWN RED', name: 'Ruby Crown', description: 'Fiery leadership', price: 2.00, mojoPrice: 2000, emoji: '👑' },
+        { id: 'FISH', name: 'Fish Hat', description: 'Aquatic adventure', price: 1.00, mojoPrice: 1000, emoji: '🐟' },
+        { id: 'FISHERMAN HAT', name: 'Fisherman Hat', description: 'Deep sea explorer', price: 0.75, mojoPrice: 750, emoji: '🎣' },
+        { id: 'MOJI', name: 'MOJI Special', description: 'Signature MOJO style', price: 1.50, mojoPrice: 1500, emoji: '🎯' },
+        { id: 'Newsboy Black', name: 'Black Newsboy', description: 'Vintage newspaper style', price: 0.75, mojoPrice: 750, emoji: '📰' },
+        { id: 'Newsboy Brown', name: 'Brown Newsboy', description: 'Classic brown leather', price: 0.75, mojoPrice: 750, emoji: '📰' },
+        { id: 'Party Hat Green', name: 'Green Party Hat', description: 'Celebration time', price: 0.60, mojoPrice: 600, emoji: '🎉' },
+        { id: 'Party Hat Orange', name: 'Orange Party Hat', description: 'Festive orange style', price: 0.60, mojoPrice: 600, emoji: '🎉' },
+        { id: 'Party Hat Red', name: 'Red Party Hat', description: 'Bold party vibes', price: 0.60, mojoPrice: 600, emoji: '🎉' },
+        { id: 'Snapback Black', name: 'Black Snapback', description: 'Urban street style', price: 0.75, mojoPrice: 750, emoji: '🧢' },
+        { id: 'Snapback Blue', name: 'Blue Snapback', description: 'Urban arctic style', price: 0.75, mojoPrice: 750, emoji: '🧢' },
+        { id: 'Snapback Gray', name: 'Gray Snapback', description: 'Neutral urban style', price: 0.75, mojoPrice: 750, emoji: '🧢' },
+        { id: 'Snapback Red', name: 'Red Snapback', description: 'Bold urban statement', price: 0.75, mojoPrice: 750, emoji: '🧢' },
+        { id: 'SNOW', name: 'Snow Hat', description: 'Winter wonderland style', price: 0.60, mojoPrice: 600, emoji: '❄️' },
+        { id: 'SUSHI', name: 'Sushi Hat', description: 'Japanese delicacy', price: 1.25, mojoPrice: 1250, emoji: '🍣' },
+        { id: 'THREAD BLACK', name: 'Black Thread', description: 'Minimalist thread style', price: 0.40, mojoPrice: 400, emoji: '🧵' },
+        { id: 'THREAD GREEN', name: 'Green Thread', description: 'Nature thread style', price: 0.40, mojoPrice: 400, emoji: '🧵' },
+        { id: 'THREAD RED', name: 'Red Thread', description: 'Bold thread accent', price: 0.40, mojoPrice: 400, emoji: '🧵' },
+        { id: 'THREAD YELLOW', name: 'Yellow Thread', description: 'Bright thread style', price: 0.40, mojoPrice: 400, emoji: '🧵' },
+        { id: 'VIKING HELMET BLACK', name: 'Black Viking Helmet', description: 'Nordic warrior', price: 1.75, mojoPrice: 1750, emoji: '⚔️' },
+        { id: 'VIKING HELMET BROWN', name: 'Brown Viking Helmet', description: 'Ancient warrior', price: 1.75, mojoPrice: 1750, emoji: '⚔️' }
+    ],
+    mouths: [
+        { id: 'NORMAL', name: 'Normal Mouth', description: 'Friendly expression', price: 0, mojoPrice: 0, emoji: '😊' },
+        { id: 'GRIN', name: 'Big Grin', description: 'Happy and excited', price: 0.25, mojoPrice: 250, emoji: '😁' },
+        { id: 'MEH', name: 'Meh Expression', description: 'Unimpressed look', price: 0.25, mojoPrice: 250, emoji: '😐' },
+        { id: 'OOHH', name: 'Surprised Ooh', description: 'Amazed reaction', price: 0.50, mojoPrice: 500, emoji: '😮' },
+        { id: 'OPEN MOUTH', name: 'Open Mouth', description: 'Shocked expression', price: 0.50, mojoPrice: 500, emoji: '😲' },
+        { id: 'POUT', name: 'Pouty Lips', description: 'Cute disappointed look', price: 0.50, mojoPrice: 500, emoji: '😤' },
+        { id: 'SAD', name: 'Sad Mouth', description: 'Melancholy mood', price: 0.25, mojoPrice: 250, emoji: '😢' },
+        { id: 'SIDE GRIN', name: 'Side Grin', description: 'Mischievous smile', price: 0.50, mojoPrice: 500, emoji: '😏' },
+        { id: 'TOOTHPICK', name: 'Toothpick', description: 'Cool and casual', price: 0.75, mojoPrice: 750, emoji: '😎' },
+        { id: 'TOUNGE', name: 'Tongue Out', description: 'Playful and silly', price: 0.50, mojoPrice: 500, emoji: '😛' }
     ]
 };
 
 // Canvas and layer management - initialized after DOM load
 let canvas = null;
 let ctx = null;
+let exportCanvas = null;
+let exportCtx = null;
+const EXPORT_SIZE = 1600; // full-res export size
 
-// Layer images storage
+// Layer images storage for all MOJO traits
 const layers = {
+    background: null,
     base: null,
-    hat: null,
-    item: null
+    clothes: null,
+    eyes: null,
+    head: null,
+    mouth: null
 };
 
 // === LOADING SYSTEM ===
@@ -228,6 +326,386 @@ function playPartySound() {
     setTimeout(() => playTone(659, 0.2), 100);
     setTimeout(() => playTone(784, 0.2), 200);
     setTimeout(() => playTone(1047, 0.3), 300);
+}
+
+// === MOJO TOKEN PRICE INTEGRATION ===
+
+// MOJO Token Configuration
+const MOJO_TOKEN = {
+    address: '0xYourMojoTokenAddress', // Replace with actual MOJO token address
+    currentPrice: 0.001, // Default price in USD
+    priceLastUpdated: 0
+};
+
+// Fetch MOJO token price from DexScreener API
+async function fetchMojoPrice() {
+    try {
+        const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${MOJO_TOKEN.address}`);
+        const data = await response.json();
+        
+        if (data.pairs && data.pairs.length > 0) {
+            // Get the first pair (usually the most liquid)
+            const pair = data.pairs[0];
+            MOJO_TOKEN.currentPrice = parseFloat(pair.priceUsd) || 0.001;
+            MOJO_TOKEN.priceLastUpdated = Date.now();
+            
+            console.log(`🪙 MOJO token price updated: $${MOJO_TOKEN.currentPrice.toFixed(6)}`);
+            
+            // Update pricing display
+            updatePricingDisplay();
+            
+            return MOJO_TOKEN.currentPrice;
+        }
+    } catch (error) {
+        console.warn('⚠️ Failed to fetch MOJO price, using fallback:', error);
+        MOJO_TOKEN.currentPrice = 0.001; // Fallback price
+    }
+    
+    return MOJO_TOKEN.currentPrice;
+}
+
+// Convert USD price to MOJO tokens
+function convertToMojoPrice(usdPrice) {
+    if (usdPrice === 0) return 0;
+    return Math.round(usdPrice / MOJO_TOKEN.currentPrice);
+}
+
+// Format MOJO price display
+function formatMojoPrice(mojoAmount) {
+    if (mojoAmount === 0) return 'Free';
+    return `${mojoAmount.toLocaleString()} MOJO`;
+}
+
+// Update all pricing displays to show MOJO tokens
+function updatePricingDisplay() {
+    // Update menu items display
+    document.querySelectorAll('.menu-item').forEach(item => {
+        const itemId = item.getAttribute('data-value');
+        const category = item.getAttribute('data-category');
+        
+        if (category && itemId !== undefined) {
+            const menuItem = findMenuItem(itemId, category);
+            if (menuItem) {
+                const priceElement = item.querySelector('.item-price');
+                if (priceElement) {
+                    const mojoPrice = convertToMojoPrice(menuItem.price);
+                    priceElement.textContent = formatMojoPrice(mojoPrice);
+                    priceElement.style.color = 'var(--mojo-ice-blue)';
+                    priceElement.style.fontWeight = '600';
+                }
+            }
+        }
+    });
+    
+    // Update order summary
+    updateOrderSummary();
+}
+
+// Find menu item by ID and category
+function findMenuItem(itemId, category) {
+    switch(category) {
+        case 'backgrounds': return menuItems.backgrounds.find(item => item.id === itemId);
+        case 'clothes': return menuItems.clothes.find(item => item.id === itemId);
+        case 'eyes': return menuItems.eyes.find(item => item.id === itemId);
+        case 'heads': return menuItems.heads.find(item => item.id === itemId);
+        case 'mouths': return menuItems.mouths?.find(item => item.id === itemId);
+        default: return null;
+    }
+}
+
+// Initialize MOJO pricing
+async function initializeMojoPricing() {
+    console.log('🪙 Initializing MOJO token pricing...');
+    await fetchMojoPrice();
+    
+    // Update price every 5 minutes
+    setInterval(fetchMojoPrice, 5 * 60 * 1000);
+}
+
+// === WEB3 WALLET CONNECTION ===
+
+// Connect to MetaMask wallet
+async function connectWallet() {
+    try {
+        if (typeof window.ethereum === 'undefined') {
+            showNotification('🦊 Please install MetaMask to mint NFTs!', 'error');
+            return false;
+        }
+
+        // Request account access
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        
+        if (accounts.length === 0) {
+            showNotification('❌ No wallet accounts found', 'error');
+            return false;
+        }
+
+        // Initialize ethers provider
+        web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+        signer = web3Provider.getSigner();
+        userAddress = accounts[0];
+
+        // Initialize NFT contract
+        nftContract = new ethers.Contract(NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI, signer);
+
+        // Update UI
+        updateWalletUI(true);
+        
+        showNotification(`🎉 Wallet connected: ${userAddress.slice(0,6)}...${userAddress.slice(-4)}`, 'success');
+        
+        // Listen for account changes
+        window.ethereum.on('accountsChanged', handleAccountsChanged);
+        window.ethereum.on('chainChanged', handleChainChanged);
+        
+        return true;
+    } catch (error) {
+        console.error('Wallet connection error:', error);
+        showNotification('❌ Failed to connect wallet', 'error');
+        return false;
+    }
+}
+
+// Handle account changes
+function handleAccountsChanged(accounts) {
+    if (accounts.length === 0) {
+        // User disconnected
+        web3Provider = null;
+        signer = null;
+        userAddress = null;
+        nftContract = null;
+        updateWalletUI(false);
+        showNotification('👋 Wallet disconnected', 'info');
+    } else {
+        // Account changed
+        userAddress = accounts[0];
+        updateWalletUI(true);
+        showNotification(`🔄 Switched to: ${userAddress.slice(0,6)}...${userAddress.slice(-4)}`, 'info');
+    }
+}
+
+// Handle chain changes
+function handleChainChanged(chainId) {
+    // Reload the page to reset the dapp state
+    window.location.reload();
+}
+
+// Update wallet UI
+function updateWalletUI(connected) {
+    const walletBtn = document.getElementById('walletBtn');
+    const mintBtn = document.getElementById('mintBtn');
+    
+    if (connected && userAddress) {
+        walletBtn.textContent = `🟢 ${userAddress.slice(0,6)}...${userAddress.slice(-4)}`;
+        walletBtn.classList.add('connected');
+        mintBtn.disabled = false;
+        mintBtn.textContent = '🎨 MINT NFT';
+    } else {
+        walletBtn.textContent = '🦊 Connect Wallet';
+        walletBtn.classList.remove('connected');
+        mintBtn.disabled = true;
+        mintBtn.textContent = '🔒 Connect Wallet First';
+    }
+}
+
+// === NFT MINTING FUNCTIONALITY ===
+
+// Generate NFT metadata
+function generateNFTMetadata() {
+    const traits = [];
+    
+    // Add base trait
+    traits.push({
+        trait_type: "Base",
+        value: "MOJO"
+    });
+    
+    // Add headwear trait
+    if (currentOrder.hat && currentOrder.hat !== '') {
+        traits.push({
+            trait_type: "Headwear",
+            value: currentOrder.hatName || "Unknown Headwear"
+        });
+    }
+    
+    // Add accessory trait
+    if (currentOrder.item && currentOrder.item !== '') {
+        traits.push({
+            trait_type: "Accessory", 
+            value: currentOrder.itemName || "Unknown Accessory"
+        });
+    }
+    
+    // Generate rarity score (simple example)
+    const rarityScore = traits.length * Math.random() * 100;
+    
+    const metadata = {
+        name: `MOJO PFP #${Date.now()}`,
+        description: "A unique MOJO character NFT created with the MOJO PFP Maker",
+        image: "", // Will be set to IPFS hash after upload
+        attributes: traits,
+        properties: {
+            rarity_score: Math.round(rarityScore),
+            created_with: "MOJO PFP Maker",
+            timestamp: new Date().toISOString()
+        }
+    };
+    
+    return metadata;
+}
+
+// Upload image to IPFS (placeholder - you'll need to implement actual IPFS upload)
+async function uploadToIPFS(canvas) {
+    try {
+        // Convert canvas to blob
+        const blob = await new Promise(resolve => {
+            canvas.toBlob(resolve, 'image/png');
+        });
+        
+        // For demo purposes, return a placeholder IPFS hash
+        // In production, you'd upload to IPFS via Pinata, Infura, or similar
+        showNotification('📤 Uploading image to IPFS...', 'info');
+        
+        // Simulate upload delay
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Return placeholder IPFS hash
+        return "QmYourIPFSHashHere123456789";
+    } catch (error) {
+        console.error('IPFS upload error:', error);
+        throw error;
+    }
+}
+
+// Upload metadata to IPFS
+async function uploadMetadataToIPFS(metadata) {
+    try {
+        showNotification('📤 Uploading metadata to IPFS...', 'info');
+        
+        // Simulate upload delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Return placeholder metadata IPFS hash
+        return "QmYourMetadataIPFSHashHere123456789";
+    } catch (error) {
+        console.error('Metadata IPFS upload error:', error);
+        throw error;
+    }
+}
+
+// Main NFT minting function
+async function mintNFT() {
+    try {
+        if (!web3Provider || !signer || !userAddress) {
+            showNotification('🔒 Please connect your wallet first!', 'error');
+            return;
+        }
+        
+        if (!nftContract) {
+            showNotification('❌ NFT contract not initialized', 'error');
+            return;
+        }
+        
+        const canvas = document.getElementById('pfpCanvas');
+        if (!canvas) {
+            showNotification('❌ Canvas not found', 'error');
+            return;
+        }
+        
+        showNotification('🎨 Starting NFT minting process...', 'info');
+        
+        // Step 1: Upload image to IPFS
+        const imageHash = await uploadToIPFS(canvas);
+        
+        // Step 2: Generate and upload metadata
+        const metadata = generateNFTMetadata();
+        metadata.image = `ipfs://${imageHash}`;
+        
+        const metadataHash = await uploadMetadataToIPFS(metadata);
+        const tokenURI = `ipfs://${metadataHash}`;
+        
+        // Step 3: Calculate and send platform fee to Paco wallet
+        showNotification('💰 Processing platform fee...', 'info');
+        
+        const totalMojoElement = document.getElementById('totalMojoPrice');
+        const totalMojoText = totalMojoElement?.textContent || '0';
+        const totalMojoAmount = parseInt(totalMojoText.replace(/[^\d]/g, '')) || 0;
+        
+        // Calculate 5% platform fee in MOJO tokens
+        const baseMojoAmount = Math.round(totalMojoAmount / 1.05); // Remove fee to get base
+        const platformFeeMojo = totalMojoAmount - baseMojoAmount;
+        
+        // Convert MOJO fee to ETH (this would need real conversion rate)
+        // For now, using placeholder conversion - integrate with actual MOJO/ETH rate
+        const feeInEth = ethers.utils.parseEther((platformFeeMojo * 0.0001).toString()); // Placeholder rate
+        
+        try {
+            // Validate platform fee wallet is configured
+            if (!PACO_FEE_WALLET) {
+                throw new Error('Platform fee wallet not configured');
+            }
+            
+            // Send platform fee to Paco wallet
+            const feeTx = await signer.sendTransaction({
+                to: PACO_FEE_WALLET,
+                value: feeInEth
+            });
+            
+            showNotification('⏳ Platform fee transaction submitted...', 'info');
+            await feeTx.wait();
+            showNotification('✅ Platform fee processed successfully', 'success');
+        } catch (feeError) {
+            console.warn('Platform fee payment failed:', feeError);
+            showNotification('⚠️ Platform fee payment failed, continuing with mint...', 'warning');
+        }
+        
+        // Step 4: Mint the NFT
+        showNotification('⛓️ Minting NFT on blockchain...', 'info');
+        
+        const mintTx = await nftContract.mint(userAddress, tokenURI);
+        showNotification('⏳ NFT mint transaction submitted. Waiting for confirmation...', 'info');
+        
+        // Wait for transaction confirmation
+        const receipt = await mintTx.wait();
+        
+        // Success!
+        const tokenId = receipt.events?.[0]?.args?.tokenId?.toString() || 'Unknown';
+        
+        showNotification(`🎉 NFT Minted Successfully! Token ID: ${tokenId}`, 'success');
+        
+        // Update statistics
+        ordersServed++;
+        orderNumber++;
+        updateOrdersServed();
+        updateOrderNumber();
+        
+        // Record the mint in database
+        recordGlobalOrder({
+            hat: currentOrder.hat,
+            hatName: currentOrder.hatName,
+            item: currentOrder.item,
+            itemName: currentOrder.itemName,
+            total: 0, // NFT minting
+            tokenId: tokenId,
+            txHash: receipt.transactionHash
+        });
+        
+        console.log('✅ NFT minted successfully:', {
+            tokenId,
+            txHash: receipt.transactionHash,
+            tokenURI
+        });
+        
+    } catch (error) {
+        console.error('NFT minting error:', error);
+        
+        if (error.code === 'ACTION_REJECTED') {
+            showNotification('❌ Transaction rejected by user', 'error');
+        } else if (error.code === 'INSUFFICIENT_FUNDS') {
+            showNotification('❌ Insufficient funds for gas fees', 'error');
+        } else {
+            showNotification('❌ NFT minting failed. Please try again.', 'error');
+        }
+    }
 }
 
 // === SUPABASE ORDER TRACKING ===
@@ -419,17 +897,35 @@ function showNotification(message, duration = 1500) {
 
 function createMenuItem(category, item) {
     const menuItem = document.createElement('div');
-    menuItem.className = 'menu-item';
+    menuItem.className = 'trait-card';
     menuItem.setAttribute('data-category', category);
     menuItem.setAttribute('data-value', item.id);
-    menuItem.setAttribute('data-item-id', item.id); // Added data-item-id
+    menuItem.setAttribute('data-item-id', item.id);
     menuItem.setAttribute('role', 'button');
     menuItem.setAttribute('tabindex', '0');
-    menuItem.setAttribute('aria-label', `Add ${item.name} to order`);
+    menuItem.setAttribute('aria-label', `Select ${item.name} for your MOJO`);
+    
+    // Calculate MOJO price dynamically
+    const mojoPrice = convertToMojoPrice(item.price);
+    
+    // Thumbnail support (show actual asset preview where available)
+    const folderMapByCategory = {
+        backgrounds: 'BACKGROUND',
+        clothes: 'CLOTHES',
+        eyes: 'EYES',
+        heads: 'HEAD',
+        mouths: 'MOUTH'
+    };
+    const folderForCategory = folderMapByCategory[category];
+    const hasThumb = !!(item.id && folderForCategory);
+    const thumbSrc = hasThumb ? `assets/${folderForCategory}/${item.id}.png` : '';
     
     menuItem.innerHTML = `
-        <div class="item-image">${item.emoji}</div>
-        <div class="item-name">${item.name}</div>
+        <div class="trait-content">
+            ${hasThumb ? `<img class=\"trait-thumb\" src=\"${thumbSrc}\" alt=\"${item.name}\">` : ''}
+            <div class="trait-name">${item.name}</div>
+            <div class="trait-price">${formatMojoPrice(mojoPrice)} MOJO</div>
+        </div>
     `;
     
     menuItem.onclick = () => selectMenuItem(category, item.id, menuItem);
@@ -443,27 +939,92 @@ function createMenuItem(category, item) {
     return menuItem;
 }
 
-// Create and populate menu items
+// Create and populate menu items for all MOJO trait categories
 function createMenuItems() {
-    // Initialize hat menu items
-    const hatContainer = document.getElementById('hatMenuItems');
-    if (hatContainer) {
-        hatContainer.innerHTML = ''; // Clear existing items
-        menuItems.hats.forEach(hat => {
-            hatContainer.appendChild(createMenuItem('hats', hat));
+    console.log('🚀 Starting createMenuItems function');
+    console.log('📋 menuItems object:', menuItems);
+    
+    // Initialize background menu items
+    const backgroundContainer = document.getElementById('backgroundMenuItems');
+    console.log('🔍 Background container found:', !!backgroundContainer);
+    console.log('📦 Background container element:', backgroundContainer);
+    
+    if (backgroundContainer) {
+        backgroundContainer.innerHTML = '';
+        console.log('🎨 Creating', menuItems.backgrounds.length, 'background items');
+        
+        // Test creating one item first
+        const testItem = createMenuItem('backgrounds', menuItems.backgrounds[0]);
+        console.log('🧪 Test item created:', testItem);
+        backgroundContainer.appendChild(testItem);
+        
+        // Create the rest
+        menuItems.backgrounds.slice(1).forEach(background => {
+            const item = createMenuItem('backgrounds', background);
+            backgroundContainer.appendChild(item);
+            console.log('✅ Added background item:', background.name);
+        });
+        
+        console.log('🎯 Background container final HTML:', backgroundContainer.innerHTML.substring(0, 200));
+    }
+    
+    // Initialize clothes menu items
+    const clothesContainer = document.getElementById('clothesMenuItems');
+    console.log('🔍 Clothes container found:', !!clothesContainer);
+    if (clothesContainer) {
+        clothesContainer.innerHTML = '';
+        console.log('🎨 Creating', menuItems.clothes.length, 'clothes items');
+        
+        // Add a simple test to see if we can add anything
+        clothesContainer.innerHTML = '<div style="background: red; color: white; padding: 10px;">TEST CLOTHES</div>';
+        console.log('🧪 Added test clothes element');
+        
+        // Try adding real items
+        menuItems.clothes.forEach((clothes, index) => {
+            try {
+                const item = createMenuItem('clothes', clothes);
+                clothesContainer.appendChild(item);
+                console.log(`✅ Added clothes item ${index + 1}:`, clothes.name);
+            } catch (error) {
+                console.error(`❌ Error creating clothes item ${index + 1}:`, error);
+            }
         });
     }
     
-    // Initialize item menu items
-    const itemContainer = document.getElementById('itemMenuItems');
-    if (itemContainer) {
-        itemContainer.innerHTML = ''; // Clear existing items
-        menuItems.items.forEach(item => {
-            itemContainer.appendChild(createMenuItem('items', item));
+    // Initialize eyes menu items
+    const eyesContainer = document.getElementById('eyesMenuItems');
+    console.log('🔍 Eyes container found:', !!eyesContainer);
+    if (eyesContainer) {
+        eyesContainer.innerHTML = '';
+        console.log('🎨 Creating', menuItems.eyes.length, 'eyes items');
+        menuItems.eyes.forEach(eyes => {
+            eyesContainer.appendChild(createMenuItem('eyes', eyes));
         });
     }
     
-    console.log('✅ Menu items created with emojis');
+    // Initialize head menu items
+    const headContainer = document.getElementById('headMenuItems');
+    console.log('🔍 Head container found:', !!headContainer);
+    if (headContainer) {
+        headContainer.innerHTML = '';
+        console.log('🎨 Creating', menuItems.heads.length, 'head items');
+        menuItems.heads.forEach(head => {
+            headContainer.appendChild(createMenuItem('heads', head));
+        });
+    }
+    
+    // Initialize mouth menu items
+    const mouthContainer = document.getElementById('mouthMenuItems');
+    console.log('🔍 Mouth container found:', !!mouthContainer);
+    if (mouthContainer) {
+        mouthContainer.innerHTML = '';
+        console.log('🎨 Creating', menuItems.mouths.length, 'mouth items');
+        menuItems.mouths.forEach(mouth => {
+            mouthContainer.appendChild(createMenuItem('mouths', mouth));
+        });
+    }
+    
+    console.log('✅ All MOJO trait menu items created');
 }
 
 // Initialize menu system
@@ -508,24 +1069,46 @@ function selectMenuItem(category, itemId, element) {
         // Add selected class to current item
         element.classList.add('selected');
         
-        // Update current order
-        if (category === 'hats') {
-            currentOrder.hat = itemId;
-            currentOrder.hatName = getMenuItemName(itemId, category) || 'No Topping';
-        } else if (category === 'items') {
-            currentOrder.item = itemId;
-            currentOrder.itemName = getMenuItemName(itemId, category) || 'No Side';
+        // Update current order for all MOJO trait categories
+        switch(category) {
+            case 'backgrounds':
+                currentOrder.background = itemId;
+                currentOrder.backgroundName = getMenuItemName(itemId, category) || 'No Background';
+                break;
+            case 'clothes':
+                currentOrder.clothes = itemId;
+                currentOrder.clothesName = getMenuItemName(itemId, category) || 'No Clothes';
+                break;
+            case 'eyes':
+                currentOrder.eyes = itemId;
+                currentOrder.eyesName = getMenuItemName(itemId, category) || 'Normal Eyes';
+                break;
+            case 'heads':
+                currentOrder.head = itemId;
+                currentOrder.headName = getMenuItemName(itemId, category) || 'No Headwear';
+                break;
+            case 'mouths':
+                currentOrder.mouth = itemId;
+                currentOrder.mouthName = getMenuItemName(itemId, category) || 'Normal Mouth';
+                break;
         }
         
         // Update PFP and order summary
-        loadBaseImage(); // This will reload the base and then load layers
+        const layerType = category === 'backgrounds' ? 'background' :
+                          category === 'clothes' ? 'clothes' :
+                          category === 'eyes' ? 'eyes' :
+                          category === 'heads' ? 'head' :
+                          category === 'mouths' ? 'mouth' : category;
+        
+        loadLayer(layerType, itemId);
         updateOrderSummary();
+        updatePremiumPriceSummary();
         
         // Play selection sound
         playSound('select');
         
         // Show notification
-        const itemName = getMenuItemName(itemId, category) || (category === 'hats' ? 'No Topping' : 'No Side');
+        const itemName = getMenuItemName(itemId, category) || itemId || 'None';
         showNotification(`Selected: ${itemName}`, 'success');
         
         console.log(`✅ Selected ${itemName}`);
@@ -535,9 +1118,31 @@ function selectMenuItem(category, itemId, element) {
 }
 
 function loadLayer(type, value) {
-    if (value === '') {
+    if (value === '' || value === 'NORMAL') {
+        // For empty values or default "NORMAL" selections
+        if (type === 'eyes' && value === 'NORMAL') {
+            // Load the normal eyes
+            layers[type] = new Image();
+            layers[type].onload = () => drawPFP();
+            layers[type].onerror = () => {
+                console.error(`Failed to load ${type} image:`, value);
+                showNotification(`❌ Error loading ${type}`);
+            };
+            layers[type].src = `assets/${type.toUpperCase()}/${value}.png`;
+        } else if (type === 'mouth' && value === 'NORMAL') {
+            // Load the normal mouth
+            layers[type] = new Image();
+            layers[type].onload = () => drawPFP();
+            layers[type].onerror = () => {
+                console.error(`Failed to load ${type} image:`, value);
+                showNotification(`❌ Error loading ${type}`);
+            };
+            layers[type].src = `assets/${type.toUpperCase()}/${value}.png`;
+        } else {
+            // No layer selected
         layers[type] = null;
         drawPFP();
+        }
     } else {
         layers[type] = new Image();
         layers[type].onload = () => drawPFP();
@@ -545,7 +1150,18 @@ function loadLayer(type, value) {
             console.error(`Failed to load ${type} image:`, value);
             showNotification(`❌ Error loading ${type}`);
         };
-        layers[type].src = `assets/${type}/${value}.png`;
+        
+        // Map to correct folder names (case-sensitive)
+        const folderMap = {
+            background: 'BACKGROUND',
+            base: 'BASE',
+            clothes: 'CLOTHES',
+            eyes: 'EYES',
+            head: 'HEAD',
+            mouth: 'MOUTH'
+        };
+        const folderName = folderMap[type];
+        layers[type].src = `assets/${folderName}/${value}.png`;
     }
 }
 
@@ -569,31 +1185,83 @@ function calculateOrderTotal() {
     return parseUserAmount(totalElement.textContent);
 }
 
-// Update the order summary display with randomized prices
+// Update the premium price summary display with 5% platform fee
+function updatePremiumPriceSummary() {
+    const totalMojoElement = document.getElementById('totalMojoPrice');
+    const totalUsdElement = document.getElementById('totalUsdPrice');
+    
+    if (!totalMojoElement || !totalUsdElement) {
+        console.log('Premium price summary elements not found');
+        return;
+    }
+    
+    let baseMojoPrice = 500; // Base MOJO price for the NFT
+    let baseUsdPrice = 0.10; // Base USD price
+    
+    // Add selected traits
+    Object.entries(currentOrder).forEach(([category, itemId]) => {
+        if (itemId && itemId !== 'none' && itemId !== 'normal' && itemId !== 'NONE' && itemId !== 'NORMAL' && itemId !== '') {
+            const item = findMenuItem(category, itemId);
+            if (item) {
+                baseMojoPrice += item.mojoPrice || 0;
+                baseUsdPrice += item.price || 0;
+            }
+        }
+    });
+    
+    // Add gas fee estimate
+    baseMojoPrice += 100;
+    baseUsdPrice += 0.02;
+    
+    // Apply 5% platform fee (goes to Paco wallet via environment variable)
+    const platformFeeRate = PLATFORM_FEE_RATE;
+    const platformFeeMojo = Math.round(baseMojoPrice * platformFeeRate);
+    const platformFeeUsd = baseUsdPrice * platformFeeRate;
+    const totalMojoPrice = baseMojoPrice + platformFeeMojo;
+    const totalUsdPrice = baseUsdPrice + platformFeeUsd;
+    
+    // Update total display
+    totalMojoElement.textContent = `${formatMojoPrice(totalMojoPrice)} MOJO`;
+    totalUsdElement.textContent = `≈ $${totalUsdPrice.toFixed(2)} USD`;
+    
+    console.log(`Premium order total: ${totalMojoPrice} MOJO (≈ $${totalUsdPrice.toFixed(2)} USD)`);
+    console.log(`Platform fee: ${platformFeeMojo} MOJO (≈ $${platformFeeUsd.toFixed(3)} USD) → Platform wallet`);
+}
+
+// Update the order summary display with MOJO token prices
 function updateOrderSummary() {
     const orderItemsContainer = document.querySelector('.order-items');
     const subtotalElement = document.querySelector('.subtotal-amount');
     const totalElement = document.querySelector('.total-amount');
     
+    // Check if elements exist (they might not in the new single-page layout)
+    if (!orderItemsContainer) {
+        console.log('Order summary elements not found - skipping update');
+        return;
+    }
+    
     // Clear current items
     orderItemsContainer.innerHTML = '';
     
-    let subtotal = 0;
+    let subtotalUSD = 0;
+    let subtotalMOJO = 0;
     
-    // Add base chicken
+    // Add base MOJO
     if (currentOrder.base) {
-        const basePrice = getRandomPrice(2.99, 8.99);
+        // Hide base price in USD; show MOJO only when mintPrice is fetched from contract
+        const baseMojoPrice = 0;
         const baseItem = document.createElement('div');
         baseItem.className = 'order-item';
         baseItem.innerHTML = `
             <div class="order-item-left">
                 <div class="item-qty">1</div>
-                <div class="item-name">Original Paco</div>
+                <div class="item-name">MOJO Base</div>
             </div>
-            <div class="item-price">$${basePrice.toFixed(2)}</div>
+            <div class="item-price">${formatMojoPrice(baseMojoPrice)}</div>
         `;
         orderItemsContainer.appendChild(baseItem);
-        subtotal += basePrice;
+        subtotalUSD += basePrice;
+        subtotalMOJO += baseMojoPrice;
     }
     
     // Add hat/topping
@@ -666,12 +1334,27 @@ function updateOrderSummary() {
         subtotal += noSidePrice;
     }
     
-    // Update totals with random blockchain fee
-    const blockchainFee = getRandomPrice(0.001, 0.025);
-    const total = subtotal + blockchainFee;
+    // Update totals with gas fee in MOJO
+    const gasFeeMOJO = 0;
+    const totalUSD = subtotalUSD;
+    const totalMOJO = subtotalMOJO;
     
-    if (subtotalElement) subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
-    if (totalElement) totalElement.textContent = `$${total.toFixed(2)}`;
+    // Add gas fee to display
+    if (subtotalMOJO > 0) {
+        const gasItem = document.createElement('div');
+        gasItem.className = 'order-item';
+        gasItem.innerHTML = `
+            <div class="order-item-left">
+                <div class="item-qty">1</div>
+                <div class="item-name">Gas Fee</div>
+            </div>
+            <div class="item-price">${formatMojoPrice(gasFeeMOJO)}</div>
+        `;
+        orderItemsContainer.appendChild(gasItem);
+    }
+    
+    if (subtotalElement) subtotalElement.textContent = formatMojoPrice(subtotalMOJO);
+    if (totalElement) totalElement.textContent = formatMojoPrice(totalMOJO);
     
     // Update order count
     updateOrdersServed();
@@ -725,26 +1408,60 @@ function drawPFP() {
     
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // Draw base chicken
+    // Draw layers in proper order (background to foreground)
+    
+    // 1. Background layer (if selected)
+    if (layers.background && layers.background.complete) {
+        ctx.drawImage(layers.background, 0, 0, canvas.width, canvas.height);
+    }
+    
+    // 2. Base MOJO character
     if (layers.base && layers.base.complete) {
         ctx.drawImage(layers.base, 0, 0, canvas.width, canvas.height);
     }
     
-    // Draw hat topping
-    if (layers.hat && layers.hat.complete) {
-        ctx.drawImage(layers.hat, 0, 0, canvas.width, canvas.height);
+    // 3. Clothes layer
+    if (layers.clothes && layers.clothes.complete) {
+        ctx.drawImage(layers.clothes, 0, 0, canvas.width, canvas.height);
     }
     
-    // Draw item side
-    if (layers.item && layers.item.complete) {
-        ctx.drawImage(layers.item, 0, 0, canvas.width, canvas.height);
+    // 4. Eyes layer
+    if (layers.eyes && layers.eyes.complete) {
+        ctx.drawImage(layers.eyes, 0, 0, canvas.width, canvas.height);
     }
     
+    // 5. Mouth layer
+    if (layers.mouth && layers.mouth.complete) {
+        ctx.drawImage(layers.mouth, 0, 0, canvas.width, canvas.height);
+    }
+    
+    // 6. Head/headwear layer (drawn last so it's on top)
+    if (layers.head && layers.head.complete) {
+        ctx.drawImage(layers.head, 0, 0, canvas.width, canvas.height);
+    }
+    
+    // Also render a full-resolution version to an offscreen export canvas
+    if (exportCanvas && exportCtx) {
+        exportCtx.clearRect(0, 0, EXPORT_SIZE, EXPORT_SIZE);
+        if (layers.background && layers.background.complete) exportCtx.drawImage(layers.background, 0, 0, EXPORT_SIZE, EXPORT_SIZE);
+        if (layers.base && layers.base.complete) exportCtx.drawImage(layers.base, 0, 0, EXPORT_SIZE, EXPORT_SIZE);
+        if (layers.clothes && layers.clothes.complete) exportCtx.drawImage(layers.clothes, 0, 0, EXPORT_SIZE, EXPORT_SIZE);
+        if (layers.eyes && layers.eyes.complete) exportCtx.drawImage(layers.eyes, 0, 0, EXPORT_SIZE, EXPORT_SIZE);
+        if (layers.mouth && layers.mouth.complete) exportCtx.drawImage(layers.mouth, 0, 0, EXPORT_SIZE, EXPORT_SIZE);
+        if (layers.head && layers.head.complete) exportCtx.drawImage(layers.head, 0, 0, EXPORT_SIZE, EXPORT_SIZE);
+    }
+
     // Update canvas aria-label
-    const hat = currentOrder.hatName || 'no topping';
-    const item = currentOrder.itemName || 'no side';
+    const background = currentOrder.backgroundName || 'no background';
+    const clothes = currentOrder.clothesName || 'no clothes';
+    const eyes = currentOrder.eyesName || 'normal eyes';
+    const head = currentOrder.headName || 'no headwear';
+    const mouth = currentOrder.mouthName || 'normal mouth';
+    
     if (canvas) {
-        canvas.setAttribute('aria-label', `Your custom Paco chicken with ${hat} and ${item}`);
+        canvas.setAttribute('aria-label', 
+            `Your custom MOJO with ${background}, ${clothes}, ${eyes}, ${head}, and ${mouth}`
+        );
     }
 }
 
@@ -798,9 +1515,9 @@ function quickOrder(hatId, itemId) {
     };
     layers.base.onerror = () => {
         console.error('Failed to load base image for quick combo');
-        showNotification('❌ Error loading base chicken');
+        showNotification('❌ Error loading base MOJO');
     };
-    layers.base.src = 'assets/base/PACO.png';
+    layers.base.src = 'assets/BASE/MOJO BODY.png';
     
     updateOrderSummary();
     updateOrderTotal();
@@ -809,83 +1526,86 @@ function quickOrder(hatId, itemId) {
 }
 
 function randomizePFP() {
-    playPartySound();
-    
-    // Random selections
-    const randomHat = Math.random() < 0.7 ? menuItems.hats[Math.floor(Math.random() * menuItems.hats.length)] : null;
-    const randomItem = Math.random() < 0.7 ? menuItems.items[Math.floor(Math.random() * menuItems.items.length)] : null;
-    
-    // Clear current selections
-    document.querySelectorAll('.menu-item.selected').forEach(item => {
-        item.classList.remove('selected');
-    });
-    
-    // Update order state immediately
-    if (randomHat) {
-        const hatElement = document.querySelector(`[data-category="hats"][data-value="${randomHat.id}"]`);
-        if (hatElement) {
-            hatElement.classList.add('selected');
-            currentOrder.hat = randomHat.id;
-            currentOrder.hatName = randomHat.name;
-        }
-    } else {
-        // Select "No Topping"
-        const noHatElement = document.querySelector(`[data-category="hats"][data-value=""]`);
-        if (noHatElement) {
-            noHatElement.classList.add('selected');
-            currentOrder.hat = '';
-            currentOrder.hatName = '';
-        }
-    }
-    
-    if (randomItem) {
-        const itemElement = document.querySelector(`[data-category="items"][data-value="${randomItem.id}"]`);
-        if (itemElement) {
-            itemElement.classList.add('selected');
-            currentOrder.item = randomItem.id;
-            currentOrder.itemName = randomItem.name;
-        }
-    } else {
-        // Select "No Side"
-        const noItemElement = document.querySelector(`[data-category="items"][data-value=""]`);
-        if (noItemElement) {
-            noItemElement.classList.add('selected');
-            currentOrder.item = '';
-            currentOrder.itemName = '';
-        }
-    }
-    
-    // Load base layer first, then load traits after base is ready
-    if (!canvas) return;
-    
-    layers.base = new Image();
-    layers.base.onload = () => {
-        // Base loaded, now load the random traits
-        if (randomHat) {
-            loadLayer('hat', randomHat.id);
-        } else {
-            loadLayer('hat', ''); // No hat
-        }
+    try {
+        playPartySound();
         
-        if (randomItem) {
-            loadLayer('item', randomItem.id);
-        } else {
-            loadLayer('item', ''); // No item
-        }
+        // Random selections for MOJO traits
+        const randomBackground = menuItems.backgrounds[Math.floor(Math.random() * menuItems.backgrounds.length)];
+        const randomClothes = menuItems.clothes[Math.floor(Math.random() * menuItems.clothes.length)];
+        const randomEyes = menuItems.eyes[Math.floor(Math.random() * menuItems.eyes.length)];
+        const randomHead = menuItems.heads[Math.floor(Math.random() * menuItems.heads.length)];
+        const randomMouth = menuItems.mouths[Math.floor(Math.random() * menuItems.mouths.length)];
         
-        drawPFP();
-        console.log('✅ Random combo loaded with base + traits');
-    };
-    layers.base.onerror = () => {
-        console.error('Failed to load base image for random combo');
-        showNotification('❌ Error loading base chicken');
-    };
-    layers.base.src = 'assets/base/PACO.png';
-    
-    updateOrderSummary();
-    updateOrderTotal();
-    
-    showNotification('🎲 Surprise order prepared by our chef!');
+        // Update current order
+        currentOrder.background = randomBackground.id;
+        currentOrder.backgroundName = randomBackground.name;
+        currentOrder.clothes = randomClothes.id;
+        currentOrder.clothesName = randomClothes.name;
+        currentOrder.eyes = randomEyes.id;
+        currentOrder.eyesName = randomEyes.name;
+        currentOrder.head = randomHead.id;
+        currentOrder.headName = randomHead.name;
+        currentOrder.mouth = randomMouth.id;
+        currentOrder.mouthName = randomMouth.name;
+        
+        // Update UI
+        document.querySelectorAll('.trait-card.selected').forEach(item => {
+            item.classList.remove('selected');
+        });
+        
+        // Select the random items in UI
+        const bgElement = document.querySelector(`[data-category="backgrounds"][data-value="${randomBackground.id}"]`);
+        if (bgElement) bgElement.classList.add('selected');
+        
+        const clothesElement = document.querySelector(`[data-category="clothes"][data-value="${randomClothes.id}"]`);
+        if (clothesElement) clothesElement.classList.add('selected');
+        
+        const eyesElement = document.querySelector(`[data-category="eyes"][data-value="${randomEyes.id}"]`);
+        if (eyesElement) eyesElement.classList.add('selected');
+        
+        const headElement = document.querySelector(`[data-category="heads"][data-value="${randomHead.id}"]`);
+        if (headElement) headElement.classList.add('selected');
+        
+        const mouthElement = document.querySelector(`[data-category="mouths"][data-value="${randomMouth.id}"]`);
+        if (mouthElement) mouthElement.classList.add('selected');
+        
+        // Update display
+        updatePFPCanvas();
+        showNotification(`🎲 Random MOJO created!`);
+        
+    } catch (error) {
+        console.error('Error in randomizePFP:', error);
+        showNotification('❌ Error creating random MOJO');
+    }
+}
+
+// Clear order and reset to defaults
+function clearOrder() {
+    try {
+        // Reset current order to defaults
+        currentOrder.background = '';
+        currentOrder.backgroundName = 'No Background';
+        currentOrder.clothes = '';
+        currentOrder.clothesName = 'No Clothes';
+        currentOrder.eyes = 'NORMAL';
+        currentOrder.eyesName = 'Normal Eyes';
+        currentOrder.head = '';
+        currentOrder.headName = 'No Headwear';
+        currentOrder.mouth = 'NORMAL';
+        currentOrder.mouthName = 'Normal Mouth';
+        
+        // Clear UI selections
+        document.querySelectorAll('.trait-card.selected').forEach(item => {
+            item.classList.remove('selected');
+        });
+        
+        // Update display
+        updatePFPCanvas();
+        showNotification('🗑️ MOJO reset to default');
+        
+    } catch (error) {
+        console.error('Error clearing order:', error);
+    }
 }
 
 // === ORDER COMPLETION ===
@@ -899,11 +1619,14 @@ function downloadPFP() {
         
         const link = document.createElement('a');
         const timestamp = new Date().toISOString().slice(0, 19).replace(/[:-]/g, '');
-        const hat = currentOrder.hat || 'plain';
-        const item = currentOrder.item || 'nosides';
+        const head = currentOrder.head || 'nohead';
+        const clothes = currentOrder.clothes || 'noclothes';
+        const bg = currentOrder.background || 'nobg';
         
-        link.download = `paco-order-${orderNumber.toString().padStart(4, '0')}-${hat}-${item}-${timestamp}.png`;
-        link.href = canvas.toDataURL('image/png', 1.0);
+        // Export full-resolution from offscreen canvas
+        const source = (exportCanvas && exportCanvas.width === EXPORT_SIZE) ? exportCanvas : canvas;
+        link.download = `mojo-pfp-${orderNumber.toString().padStart(4, '0')}-${bg}-${clothes}-${head}-${timestamp}.png`;
+        link.href = source.toDataURL('image/png', 1.0);
         link.click();
         
         // Update statistics
@@ -975,11 +1698,17 @@ function clearOrder() {
     });
     
     // Reset current order to defaults
-    currentOrder.base = 'PACO';
-    currentOrder.hat = '';
-    currentOrder.hatName = 'No Topping';
-    currentOrder.item = '';
-    currentOrder.itemName = 'No Side';
+    currentOrder.base = 'MOJO BODY';
+    currentOrder.background = '';
+    currentOrder.backgroundName = 'No Background';
+    currentOrder.clothes = '';
+    currentOrder.clothesName = 'No Clothes';
+    currentOrder.eyes = 'NORMAL';
+    currentOrder.eyesName = 'Normal Eyes';
+    currentOrder.head = '';
+    currentOrder.headName = 'No Headwear';
+    currentOrder.mouth = 'NORMAL';
+    currentOrder.mouthName = 'Normal Mouth';
     
     // Select default "none" options
     setTimeout(() => {
@@ -1150,12 +1879,12 @@ function buyPaco() {
 }
 
 function copyContract() {
-    const contractAddress = '0x98DC57db2a2dB5bfa58370fc063A2d50A20B2528';
+    const contractAddress = NFT_CONTRACT_ADDRESS;
     
     if (navigator.clipboard) {
         navigator.clipboard.writeText(contractAddress).then(() => {
             playKitchenSound();
-            showNotification('📋 Franchise contract copied!');
+            showNotification('📋 NFT contract address copied!');
         }).catch(() => {
             showNotification('❌ Failed to copy contract');
         });
@@ -1172,7 +1901,7 @@ function copyContract() {
         try {
             document.execCommand('copy');
             playKitchenSound();
-            showNotification('📋 Franchise contract copied!');
+            showNotification('📋 NFT contract address copied!');
         } catch (err) {
             showNotification('❌ Failed to copy contract');
         }
@@ -1300,14 +2029,19 @@ setTimeout(() => {
 
 // Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 DOM loaded, starting restaurant initialization...');
-    
+    console.log('🚀 DOM loaded, initializing MOJO generator...');
     try {
-        // Initialize restaurant
         initializeRestaurant();
-        console.log('✅ Restaurant initialized successfully');
-    } catch (error) {
-        console.error('❌ Error during restaurant initialization:', error);
+    } catch (e) {
+        console.error('Init error, using minimal boot path:', e);
+        try {
+            // Minimal fallback to ensure trait UI appears
+            createMenuItems();
+            initializeCanvas();
+            loadBaseImage();
+        } catch (e2) {
+            console.error('Fallback init failed:', e2);
+        }
     }
 });
 
@@ -1320,7 +2054,7 @@ function initializeRestaurant() {
     
     try {
         // Set initial base selection
-        currentOrder.base = 'PACO';
+        currentOrder.base = 'MOJO';
         
         // Initialize menu sections
         createMenuItems();
@@ -1328,28 +2062,53 @@ function initializeRestaurant() {
         // Initialize order number
         initializeOrderNumber();
         
-        // Set default selections to "none" options after menu items are created
+        // Set default selections for all MOJO trait categories
         setTimeout(() => {
             try {
-                // Find and select the "No Topping" option
-                const noToppingElement = document.querySelector('[data-item-id=""][data-category="hats"]');
-                if (noToppingElement) {
-                    noToppingElement.classList.add('selected');
-                    currentOrder.hat = '';
-                    currentOrder.hatName = 'No Topping';
+                // Set default background (none)
+                const noBackgroundElement = document.querySelector('[data-item-id=""][data-category="backgrounds"]');
+                if (noBackgroundElement) {
+                    noBackgroundElement.classList.add('selected');
+                    currentOrder.background = '';
+                    currentOrder.backgroundName = 'No Background';
                 }
                 
-                // Find and select the "No Side" option  
-                const noSideElement = document.querySelector('[data-item-id=""][data-category="items"]');
-                if (noSideElement) {
-                    noSideElement.classList.add('selected');
-                    currentOrder.item = '';
-                    currentOrder.itemName = 'No Side';
+                // Set default clothes (none)
+                const noClothesElement = document.querySelector('[data-item-id=""][data-category="clothes"]');
+                if (noClothesElement) {
+                    noClothesElement.classList.add('selected');
+                    currentOrder.clothes = '';
+                    currentOrder.clothesName = 'No Clothes';
+                }
+                
+                // Set default eyes (normal)
+                const normalEyesElement = document.querySelector('[data-item-id="NORMAL"][data-category="eyes"]');
+                if (normalEyesElement) {
+                    normalEyesElement.classList.add('selected');
+                    currentOrder.eyes = 'NORMAL';
+                    currentOrder.eyesName = 'Normal Eyes';
+                }
+                
+                // Set default head (none)
+                const noHeadElement = document.querySelector('[data-item-id=""][data-category="heads"]');
+                if (noHeadElement) {
+                    noHeadElement.classList.add('selected');
+                    currentOrder.head = '';
+                    currentOrder.headName = 'No Headwear';
+                }
+                
+                // Set default mouth (normal)
+                const normalMouthElement = document.querySelector('[data-item-id="NORMAL"][data-category="mouths"]');
+                if (normalMouthElement) {
+                    normalMouthElement.classList.add('selected');
+                    currentOrder.mouth = 'NORMAL';
+                    currentOrder.mouthName = 'Normal Mouth';
                 }
                 
                 // Initial PFP generation and order summary update
                 loadBaseImage();
                 updateOrderSummary();
+                updatePremiumPriceSummary();
             } catch (error) {
                 console.error('Error setting default selections:', error);
             }
@@ -1377,7 +2136,13 @@ function initializeRestaurant() {
             console.warn('⚠️ Supabase initialization failed silently:', error);
         });
         
-        console.log('✅ Restaurant initialized successfully!');
+        // Initialize Web3 wallet connection UI
+        updateWalletUI(false);
+        
+        // Initialize MOJO token pricing
+        initializeMojoPricing();
+        
+        console.log('✅ MOJO PFP Maker initialized successfully!');
         
         // Hide loading screen after successful initialization
         setTimeout(() => {
@@ -1389,6 +2154,7 @@ function initializeRestaurant() {
         // Ensure we still update the order summary even if other things fail
         try {
             updateOrderSummary();
+            updatePremiumPriceSummary();
         } catch (e) {
             console.error('❌ Error updating order summary:', e);
         }
@@ -1531,7 +2297,16 @@ function getMenuItemName(itemId, category) {
     try {
         if (!itemId) return null;
         
-        const items = category === 'hats' ? menuItems.hats : menuItems.items;
+        let items;
+        switch(category) {
+            case 'backgrounds': items = menuItems.backgrounds; break;
+            case 'clothes': items = menuItems.clothes; break;
+            case 'eyes': items = menuItems.eyes; break;
+            case 'heads': items = menuItems.heads; break;
+            case 'mouths': items = menuItems.mouths; break;
+            default: return null;
+        }
+        
         const item = items.find(item => item.id === itemId);
         return item ? item.name : null;
     } catch (error) {
@@ -1555,9 +2330,15 @@ function initializeCanvas() {
             return false;
         }
         
-        // Set canvas properties to match asset resolution
-        canvas.width = 1600;
-        canvas.height = 1600;
+        // Preview canvas stays small to prevent blowing out layout
+        canvas.width = 400;
+        canvas.height = 400;
+        
+        // Prepare offscreen export canvas for full-res output
+        exportCanvas = document.createElement('canvas');
+        exportCanvas.width = EXPORT_SIZE;
+        exportCanvas.height = EXPORT_SIZE;
+        exportCtx = exportCanvas.getContext('2d');
         
         // Clear canvas with transparent background
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1673,7 +2454,7 @@ function loadBaseImage() {
             // Draw fallback
             drawFallbackImage(ctx, canvas);
         };
-        baseImg.src = 'assets/base/PACO.png';
+        baseImg.src = 'assets/BASE/MOJO BODY.png';
     } catch (error) {
         console.error('Error in loadBaseImage:', error);
     }
@@ -1692,7 +2473,7 @@ function loadSelectedLayers() {
             hatImg.onload = function() {
                 ctx.drawImage(hatImg, 0, 0, canvas.width, canvas.height);
             };
-            hatImg.src = `assets/hat/${currentOrder.hat}.png`;
+            hatImg.src = `assets/HEAD/${currentOrder.head}.png`;
         }
         
         // Load item layer if selected
@@ -1702,7 +2483,7 @@ function loadSelectedLayers() {
             itemImg.onload = function() {
                 ctx.drawImage(itemImg, 0, 0, canvas.width, canvas.height);
             };
-            itemImg.src = `assets/item/${currentOrder.item}.png`;
+            itemImg.src = `assets/CLOTHES/${currentOrder.clothes}.png`;
         }
     } catch (error) {
         console.error('Error loading layers:', error);

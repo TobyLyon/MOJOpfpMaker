@@ -1,0 +1,21 @@
+{
+  "name": "mojo-nft-contracts",
+  "version": "1.0.0",
+  "description": "Smart contracts for MOJO NFT PFP collection",
+  "scripts": {
+    "compile": "npx hardhat compile",
+    "test": "npx hardhat test",
+    "deploy:localhost": "npx hardhat run scripts/deploy.js --network localhost",
+    "deploy:goerli": "npx hardhat run scripts/deploy.js --network goerli",
+    "deploy:mainnet": "npx hardhat run scripts/deploy.js --network mainnet",
+    "verify": "npx hardhat verify --network"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
+    "hardhat": "^2.17.0"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.9.3",
+    "erc721a": "^4.2.3"
+  }
+}

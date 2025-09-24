@@ -1,0 +1,640 @@
+/* ===== MOJO THE YETI THEME OVERRIDES ===== */
+
+/* Social Buttons Styling */
+.social-buttons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-right: 15px;
+}
+
+.social-btn {
+    display: inline-block;
+    transition: transform 0.2s ease, filter 0.2s ease;
+    opacity: 0.8;
+}
+
+.social-btn:hover {
+    transform: scale(1.1);
+    filter: brightness(1.2);
+    opacity: 1;
+}
+
+.social-btn img {
+    display: block;
+    border-radius: 4px;
+}
+
+/* Header adjustments for better spacing */
+.header-stats {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Brand info adjustments */
+.brand-info img {
+    margin-bottom: 5px;
+}
+
+/* About section styling */
+.about-section {
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(135, 206, 235, 0.2);
+    box-shadow: var(--shadow-ice);
+}
+
+.marquee-container {
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.marquee-container img {
+    animation: marqueeScroll 20s linear infinite;
+}
+
+@keyframes marqueeScroll {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
+
+/* Preview header adjustments */
+.preview-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.preview-header img {
+    filter: drop-shadow(0 2px 8px rgba(135, 206, 235, 0.3));
+}
+
+/* Enhanced MOJO Styling */
+.menu-category {
+    background: linear-gradient(135deg, 
+        rgba(15, 23, 42, 0.8) 0%, 
+        rgba(30, 41, 59, 0.8) 100%
+    ) !important;
+    border: 2px solid rgba(135, 206, 235, 0.3) !important;
+    box-shadow: var(--shadow-blue) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.menu-category::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--mojo-ice-blue), transparent);
+    opacity: 0.7;
+}
+
+.menu-category:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: var(--shadow-ice) !important;
+    border-color: rgba(135, 206, 235, 0.6) !important;
+    animation: mojoIceGlow 3s ease-in-out infinite;
+}
+
+.category-title {
+    color: var(--mojo-ice-blue) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.category-icon {
+    filter: drop-shadow(0 0 8px rgba(135, 206, 235, 0.4));
+}
+
+/* Menu Items MOJO Style */
+.menu-item {
+    background: linear-gradient(135deg, 
+        rgba(74, 144, 226, 0.1) 0%, 
+        rgba(135, 206, 235, 0.1) 100%
+    ) !important;
+    border: 1px solid rgba(135, 206, 235, 0.2) !important;
+    transition: all 0.3s ease !important;
+}
+
+.menu-item:hover {
+    background: linear-gradient(135deg, 
+        rgba(74, 144, 226, 0.2) 0%, 
+        rgba(135, 206, 235, 0.2) 100%
+    ) !important;
+    border-color: rgba(135, 206, 235, 0.5) !important;
+    transform: translateY(-3px) !important;
+    box-shadow: 0 8px 25px rgba(135, 206, 235, 0.3) !important;
+}
+
+.menu-item.selected {
+    background: linear-gradient(135deg, var(--mojo-blue), var(--mojo-ice-blue)) !important;
+    border-color: var(--mojo-ice-blue) !important;
+    box-shadow: 0 0 20px rgba(135, 206, 235, 0.5) !important;
+    animation: mojoIceGlow 2s ease-in-out infinite;
+}
+
+/* Action Buttons MOJO Style */
+.place-order-btn, .copy-btn, .clear-order-btn {
+    border: 1px solid rgba(135, 206, 235, 0.3) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+.place-order-btn {
+    background: linear-gradient(135deg, var(--mojo-accent), var(--mojo-mint)) !important;
+}
+
+.copy-btn {
+    background: linear-gradient(135deg, var(--mojo-blue), var(--mojo-dark-blue)) !important;
+}
+
+.clear-order-btn {
+    background: linear-gradient(135deg, var(--mojo-gray), var(--mojo-dark-gray)) !important;
+}
+
+/* Canvas Container MOJO Style */
+.canvas-container {
+    background: linear-gradient(135deg, 
+        rgba(15, 23, 42, 0.8) 0%, 
+        rgba(30, 41, 59, 0.8) 100%
+    ) !important;
+    border: 2px solid rgba(135, 206, 235, 0.4) !important;
+    box-shadow: 
+        0 0 30px rgba(135, 206, 235, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.canvas-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 30% 30%, rgba(135, 206, 235, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 70% 70%, rgba(74, 144, 226, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+#pfpCanvas {
+    position: relative;
+    z-index: 1;
+    border-radius: var(--border-radius-md);
+}
+
+/* Stats and Info MOJO Style */
+.stat-number {
+    color: var(--mojo-ice-blue) !important;
+    text-shadow: 0 0 10px rgba(135, 206, 235, 0.5);
+}
+
+.stat-label {
+    color: var(--mojo-accent) !important;
+}
+
+/* Preview Header MOJO Style */
+.preview-header h2 {
+    background: linear-gradient(135deg, var(--mojo-ice-blue) 0%, var(--mojo-blue) 100%) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    filter: drop-shadow(0 0 15px rgba(135, 206, 235, 0.4));
+    text-align: center;
+}
+
+/* Combo Buttons MOJO Style */
+.combo-btn-compact {
+    background: linear-gradient(135deg, var(--mojo-blue), var(--mojo-dark-blue)) !important;
+    border: 1px solid rgba(135, 206, 235, 0.3) !important;
+    color: var(--mojo-white) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+.combo-btn-compact:hover {
+    background: linear-gradient(135deg, var(--mojo-ice-blue), var(--mojo-blue)) !important;
+    box-shadow: 0 0 15px rgba(135, 206, 235, 0.4) !important;
+}
+
+.combo-btn-compact.special {
+    background: linear-gradient(135deg, var(--mojo-mint), var(--mojo-accent)) !important;
+    animation: mojoIceGlow 3s ease-in-out infinite;
+}
+
+/* Notification MOJO Style */
+.notification {
+    background: linear-gradient(135deg, var(--mojo-blue), var(--mojo-dark-blue)) !important;
+    border: 1px solid rgba(135, 206, 235, 0.4) !important;
+    box-shadow: 0 0 20px rgba(135, 206, 235, 0.3) !important;
+    color: var(--mojo-white) !important;
+}
+
+/* Order Summary MOJO Style */
+.order-summary-compact {
+    background: linear-gradient(135deg, 
+        rgba(15, 23, 42, 0.9) 0%, 
+        rgba(30, 41, 59, 0.9) 100%
+    ) !important;
+    border: 1px solid rgba(135, 206, 235, 0.3) !important;
+    box-shadow: var(--shadow-blue) !important;
+}
+
+.order-item {
+    border-bottom: 1px solid rgba(135, 206, 235, 0.2) !important;
+}
+
+.order-item .item-name {
+    color: var(--mojo-white) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.item-price, .total-amount {
+    color: var(--mojo-ice-blue) !important;
+    font-weight: 600;
+}
+
+/* Fix all black text to white */
+.menu-section-compact, .preview-section, .generator-content {
+    color: var(--mojo-white) !important;
+}
+
+.menu-section-compact * {
+    color: var(--mojo-white) !important;
+}
+
+.preview-section * {
+    color: var(--mojo-white) !important;
+}
+
+/* Fix Category Titles */
+.category-title, .category-title span {
+    color: var(--mojo-white) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Fix all heading elements */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--mojo-white) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Override any remaining dark text */
+p, span, div, label, input {
+    color: var(--mojo-white) !important;
+}
+
+/* Fix specific container titles */
+.menu-category h3,
+.menu-category .category-title,
+.info-category h3,
+.info-category .category-title {
+    color: var(--mojo-white) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Fix any nested spans in titles */
+.category-title span,
+.menu-category h3 span,
+.info-category h3 span {
+    color: var(--mojo-white) !important;
+}
+
+/* Ensure form elements are visible */
+input, select, textarea {
+    background: rgba(15, 23, 42, 0.8) !important;
+    border: 1px solid rgba(135, 206, 235, 0.3) !important;
+    color: var(--mojo-white) !important;
+}
+
+input::placeholder {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Fix any remaining text elements */
+.menu-section-compact h3,
+.preview-section h3,
+.generator-content h3,
+.restaurant-container h3 {
+    color: var(--mojo-white) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Scrollbar MOJO Style */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--surface-darker);
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--mojo-blue), var(--mojo-ice-blue));
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, var(--mojo-ice-blue), var(--mojo-accent));
+}
+
+/* ===== ARCADE STYLE TRAIT SELECTORS ===== */
+
+/* Scrollable Menu Grid */
+.menu-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+    gap: 0.75rem !important;
+    max-height: 300px !important;
+    overflow-y: auto !important;
+    padding: 0.5rem !important;
+    border-radius: var(--border-radius-md) !important;
+    background: rgba(15, 23, 42, 0.3) !important;
+    border: 1px solid rgba(135, 206, 235, 0.2) !important;
+}
+
+/* Custom Scrollbar for Menu Grids */
+.menu-grid::-webkit-scrollbar {
+    width: 6px !important;
+}
+
+.menu-grid::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.5) !important;
+    border-radius: 3px !important;
+}
+
+.menu-grid::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--mojo-blue), var(--mojo-ice-blue)) !important;
+    border-radius: 3px !important;
+}
+
+.menu-grid::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, var(--mojo-ice-blue), var(--mojo-accent)) !important;
+}
+
+/* Arcade Style Menu Items */
+.menu-item {
+    background: linear-gradient(135deg, 
+        rgba(15, 23, 42, 0.9) 0%, 
+        rgba(30, 41, 59, 0.9) 100%
+    ) !important;
+    border: 2px solid rgba(135, 206, 235, 0.3) !important;
+    border-radius: 12px !important;
+    padding: 0.75rem !important;
+    cursor: pointer !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 0.4rem !important;
+    min-height: 110px !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+/* Arcade Glow Effect */
+.menu-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, 
+        rgba(135, 206, 235, 0.05) 0%, 
+        rgba(74, 144, 226, 0.05) 100%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 0;
+}
+
+.menu-item:hover::before {
+    opacity: 1;
+}
+
+/* Item Content */
+.menu-item > * {
+    position: relative;
+    z-index: 1;
+}
+
+.menu-item .item-image {
+    font-size: 2.2rem !important;
+    margin-bottom: 0.25rem !important;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3)) !important;
+    transition: transform 0.3s ease !important;
+}
+
+.menu-item:hover .item-image {
+    transform: scale(1.1) !important;
+}
+
+.menu-item .item-name {
+    color: var(--mojo-white) !important;
+    font-weight: 600 !important;
+    font-size: 0.85rem !important;
+    line-height: 1.2 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+    margin-bottom: 0.25rem !important;
+}
+
+.menu-item .item-price {
+    color: var(--mojo-ice-blue) !important;
+    font-weight: 700 !important;
+    font-size: 0.75rem !important;
+    text-shadow: 0 0 8px rgba(135, 206, 235, 0.5) !important;
+    background: linear-gradient(135deg, 
+        rgba(135, 206, 235, 0.2) 0%, 
+        rgba(74, 144, 226, 0.2) 100%
+    ) !important;
+    padding: 0.2rem 0.5rem !important;
+    border-radius: 8px !important;
+    border: 1px solid rgba(135, 206, 235, 0.4) !important;
+    backdrop-filter: blur(10px) !important;
+}
+
+.menu-item .item-description {
+    color: var(--mojo-snow) !important;
+    opacity: 0.7 !important;
+    font-size: 0.65rem !important;
+    line-height: 1.1 !important;
+    text-align: center !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+}
+
+/* Hover Effects */
+.menu-item:hover {
+    background: linear-gradient(135deg, 
+        rgba(74, 144, 226, 0.2) 0%, 
+        rgba(135, 206, 235, 0.2) 100%
+    ) !important;
+    border-color: rgba(135, 206, 235, 0.6) !important;
+    transform: translateY(-3px) scale(1.02) !important;
+    box-shadow: 
+        0 8px 25px rgba(135, 206, 235, 0.3),
+        0 0 20px rgba(135, 206, 235, 0.2) !important;
+}
+
+/* Selected State */
+.menu-item.selected {
+    background: linear-gradient(135deg, 
+        var(--mojo-blue) 0%, 
+        var(--mojo-ice-blue) 100%
+    ) !important;
+    border-color: var(--mojo-ice-blue) !important;
+    box-shadow: 
+        0 0 30px rgba(135, 206, 235, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+    animation: mojoIceGlow 2s ease-in-out infinite;
+    transform: translateY(-2px) scale(1.05) !important;
+}
+
+.menu-item.selected .item-name {
+    color: var(--mojo-white) !important;
+    font-weight: 700 !important;
+}
+
+.menu-item.selected .item-price {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Arcade Style Category Headers */
+.menu-category {
+    margin-bottom: 1.5rem !important;
+}
+
+.category-title {
+    font-size: 1.1rem !important;
+    margin-bottom: 1rem !important;
+    text-align: center !important;
+    padding: 0.5rem !important;
+    background: linear-gradient(135deg, 
+        rgba(74, 144, 226, 0.2) 0%, 
+        rgba(135, 206, 235, 0.2) 100%
+    ) !important;
+    border-radius: var(--border-radius-md) !important;
+    border: 1px solid rgba(135, 206, 235, 0.3) !important;
+}
+
+/* Add subtle snowfall effect */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.3), transparent),
+        radial-gradient(2px 2px at 40px 70px, rgba(135,206,235,0.2), transparent),
+        radial-gradient(1px 1px at 90px 40px, rgba(255,255,255,0.2), transparent),
+        radial-gradient(1px 1px at 130px 80px, rgba(135,206,235,0.1), transparent),
+        radial-gradient(2px 2px at 160px 30px, rgba(255,255,255,0.1), transparent);
+    background-repeat: repeat;
+    background-size: 200px 150px;
+    animation: mojoSnowfall 20s linear infinite;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.6;
+}
+
+/* ===== MOBILE ARCADE OPTIMIZATIONS ===== */
+
+@media (max-width: 768px) {
+    .menu-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)) !important;
+        gap: 0.5rem !important;
+        max-height: 250px !important;
+        padding: 0.5rem !important;
+    }
+    
+    .menu-item {
+        min-height: 100px !important;
+        padding: 0.5rem !important;
+        gap: 0.3rem !important;
+    }
+    
+    .menu-item .item-image {
+        font-size: 1.8rem !important;
+    }
+    
+    .menu-item .item-name {
+        font-size: 0.8rem !important;
+    }
+    
+    .menu-item .item-price {
+        font-size: 0.7rem !important;
+        padding: 0.15rem 0.4rem !important;
+    }
+    
+    .menu-item .item-description {
+        font-size: 0.6rem !important;
+        -webkit-line-clamp: 1 !important;
+    }
+    
+    .category-title {
+        font-size: 1rem !important;
+        padding: 0.4rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .menu-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important;
+        gap: 0.4rem !important;
+        max-height: 200px !important;
+    }
+    
+    .menu-item {
+        min-height: 90px !important;
+        padding: 0.4rem !important;
+    }
+    
+    .menu-item .item-image {
+        font-size: 1.5rem !important;
+    }
+    
+    .menu-item .item-name {
+        font-size: 0.75rem !important;
+    }
+    
+    .menu-item .item-description {
+        display: none !important; /* Hide descriptions on very small screens */
+    }
+}
+
+/* Arcade Loading Animation */
+@keyframes arcadeGlow {
+    0%, 100% { 
+        box-shadow: 
+            0 0 20px rgba(135, 206, 235, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+    50% { 
+        box-shadow: 
+            0 0 30px rgba(135, 206, 235, 0.5),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+}
+
+/* Pulse effect for special items */
+@keyframes mojoPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.menu-item.rare {
+    animation: mojoPulse 3s ease-in-out infinite !important;
+}
+
+/* ===== END OF MOJO STYLES ===== */

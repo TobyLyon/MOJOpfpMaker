@@ -1,31 +1,37 @@
-/* ===== PACO'S CHICKEN PALACE - COMPACT RESTAURANT STYLES ===== */
+/* ===== MOJO THE YETI - NFT PFP GENERATOR STYLES ===== */
 
 /* === ROOT VARIABLES === */
 :root {
-    /* Vibrant Memecoin Color Palette - Cohesive */
-    --restaurant-red: #dc2626;
-    --restaurant-orange: #f97316;
-    --restaurant-yellow: #fbbf24;
-    --restaurant-green: #10b981;
+    /* MOJO Brand Color Palette */
+    --mojo-blue: #4A90E2;
+    --mojo-ice-blue: #87CEEB;
+    --mojo-dark-blue: #2E5B8A;
+    --mojo-white: #FFFFFF;
+    --mojo-snow: #F8FAFC;
+    --mojo-gray: #64748B;
+    --mojo-dark-gray: #334155;
+    --mojo-accent: #06B6D4;
+    --mojo-mint: #10B981;
     
     /* UI Component Colors */
-    --surface-dark: #1f2937;
-    --surface-darker: #111827;
-    --surface-accent: #374151;
-    --surface-light: #f9fafb;
+    --surface-dark: #0F172A;
+    --surface-darker: #020617;
+    --surface-accent: #1E293B;
+    --surface-light: #F1F5F9;
+    --surface-ice: #F0F9FF;
     
     /* Border & Shadow Colors */
-    --border-glow: rgba(251, 191, 36, 0.3);
-    --shadow-glow: 0 4px 20px rgba(251, 191, 36, 0.2);
-    --shadow-red: 0 4px 20px rgba(220, 38, 38, 0.3);
-    --shadow-green: 0 4px 20px rgba(16, 185, 129, 0.2);
-    --shadow-yellow: 0 4px 20px rgba(251, 191, 36, 0.4);
+    --border-glow: rgba(74, 144, 226, 0.3);
+    --shadow-glow: 0 4px 20px rgba(74, 144, 226, 0.2);
+    --shadow-blue: 0 4px 20px rgba(74, 144, 226, 0.3);
+    --shadow-ice: 0 4px 20px rgba(135, 206, 235, 0.2);
+    --shadow-mint: 0 4px 20px rgba(16, 185, 129, 0.4);
     
     /* Text Colors */
-    --text-primary: #ffffff;
-    --text-secondary: #f9fafb;
-    --text-muted: #d1d5db;
-    --text-dark: #111827;
+    --text-primary: #FFFFFF;
+    --text-secondary: #F1F5F9;
+    --text-muted: #94A3B8;
+    --text-dark: #0F172A;
     
     /* Spacing System */
     --space-xs: 4px;
@@ -65,17 +71,95 @@
     box-sizing: border-box;
 }
 
+/* === MOJO WEB3 WALLET STYLES === */
+.connect-wallet-btn {
+    background: linear-gradient(135deg, var(--mojo-blue), var(--mojo-dark-blue));
+    color: var(--mojo-white);
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--border-radius-md);
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-blue);
+    border: 1px solid rgba(135, 206, 235, 0.3);
+}
+
+.connect-wallet-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-ice);
+    animation: mojoIceGlow 2s ease-in-out infinite;
+}
+
+.connect-wallet-btn.connected {
+    background: linear-gradient(135deg, var(--mojo-mint), var(--mojo-accent));
+    box-shadow: var(--shadow-mint);
+}
+
+.mint-nft-btn {
+    background: linear-gradient(135deg, var(--mojo-blue), var(--mojo-ice-blue));
+    color: var(--mojo-white);
+    border: none;
+    padding: 12px 24px;
+    border-radius: var(--border-radius-lg);
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-blue);
+    position: relative;
+    overflow: hidden;
+    border: 2px solid rgba(135, 206, 235, 0.4);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.mint-nft-btn:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-ice);
+    animation: mojoIceGlow 2s ease-in-out infinite;
+}
+
+.mint-nft-btn:disabled {
+    background: linear-gradient(135deg, var(--mojo-gray), var(--mojo-dark-gray));
+    cursor: not-allowed;
+    opacity: 0.6;
+    border-color: rgba(100, 116, 139, 0.3);
+}
+
+.mint-nft-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s;
+}
+
+.mint-nft-btn:hover:not(:disabled)::before {
+    left: 100%;
+}
+
 body {
     font-family: var(--font-body);
-    background-color: #1a1a1a;
     background: 
-        linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(249, 115, 22, 0.1), rgba(251, 191, 36, 0.1), rgba(16, 185, 129, 0.1)),
-        url('bg 2048.png');
-    background-size: 400% 400%, cover;
-    background-position: center center, center center;
-    background-repeat: no-repeat, no-repeat;
-    background-attachment: fixed, fixed;
-    animation: gradientShift 12s ease infinite;
+        linear-gradient(135deg, 
+            rgba(74, 144, 226, 0.1) 0%, 
+            rgba(135, 206, 235, 0.1) 25%, 
+            rgba(6, 182, 212, 0.1) 50%, 
+            rgba(16, 185, 129, 0.1) 75%, 
+            rgba(74, 144, 226, 0.1) 100%
+        ),
+        url('BG.png'),
+        radial-gradient(circle at 20% 50%, rgba(135, 206, 235, 0.2) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(74, 144, 226, 0.2) 0%, transparent 50%),
+        var(--surface-darker);
+    background-size: 400% 400%, cover, 100% 100%, 100% 100%, 100% 100%;
+    background-position: 0% 50%, center, 0% 0%, 0% 0%, 0% 0%;
+    background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat;
+    animation: mojoGradientShift 20s ease infinite;
     color: var(--text-primary);
     min-height: 100vh;
     overflow-x: hidden;
@@ -87,11 +171,29 @@ body {
 
 
 
-/* Essential Animations Only */
-@keyframes gradientShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+/* MOJO Animations */
+@keyframes mojoGradientShift {
+    0% { background-position: 0% 50%, 0% 0%, 0% 0%; }
+    25% { background-position: 50% 25%, 20% 10%, 10% 20%; }
+    50% { background-position: 100% 50%, 40% 20%, 20% 40%; }
+    75% { background-position: 50% 75%, 60% 30%, 30% 60%; }
+    100% { background-position: 0% 50%, 0% 0%, 0% 0%; }
+}
+
+@keyframes mojoIceGlow {
+    0%, 100% { 
+        box-shadow: 0 0 20px rgba(135, 206, 235, 0.3),
+                    0 0 40px rgba(74, 144, 226, 0.2);
+    }
+    50% { 
+        box-shadow: 0 0 30px rgba(135, 206, 235, 0.5),
+                    0 0 60px rgba(74, 144, 226, 0.3);
+    }
+}
+
+@keyframes mojoSnowfall {
+    0% { transform: translateY(-100vh) rotate(0deg); }
+    100% { transform: translateY(100vh) rotate(360deg); }
 }
 
 @keyframes float {
@@ -327,8 +429,8 @@ body {
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, var(--restaurant-red), var(--restaurant-yellow), var(--restaurant-orange), var(--restaurant-green));
-    animation: gradientShift 8s ease infinite;
+    background: linear-gradient(90deg, var(--mojo-blue), var(--mojo-ice-blue), var(--mojo-accent), var(--mojo-mint));
+    animation: mojoGradientShift 12s ease infinite;
 }
 
 .restaurant-header::before {
@@ -338,7 +440,8 @@ body {
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, var(--restaurant-red), var(--restaurant-yellow), var(--restaurant-orange), var(--restaurant-green));
+    background: linear-gradient(90deg, var(--mojo-blue), var(--mojo-ice-blue), var(--mojo-accent), var(--mojo-mint));
+    animation: mojoGradientShift 12s ease infinite reverse;
 }
 
 .restaurant-logo {
@@ -373,20 +476,26 @@ body {
 .palace-title {
     font-family: var(--font-display);
     font-size: var(--font-size-lg);
-    color: var(--restaurant-yellow);
-    text-shadow: 1px 1px 0px var(--restaurant-red);
+    color: var(--mojo-ice-blue);
+    text-shadow: 1px 1px 0px var(--mojo-blue);
     margin-bottom: 2px;
     font-weight: 700;
     line-height: 1;
+    background: linear-gradient(135deg, var(--mojo-ice-blue) 0%, var(--mojo-blue) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 10px rgba(135, 206, 235, 0.3));
 }
 
 .palace-tagline {
-    color: var(--text-secondary);
+    color: var(--mojo-accent);
     font-size: 10px;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     line-height: 1;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .restaurant-stats {
@@ -4340,3 +4449,5 @@ button:focus,
         overflow: visible !important;
     }
 } 
+ 
+ 
