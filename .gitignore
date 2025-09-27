@@ -1,6 +1,10 @@
 # Environment variables and configuration
 .env
+.env.local
+.env.production
+.env.development
 config.js
+contracts/.env
 
 # Node modules
 node_modules/

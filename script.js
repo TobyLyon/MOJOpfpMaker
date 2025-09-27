@@ -8,7 +8,6 @@ async function loadSupabaseClient() {
     try {
         const module = await import('./supabase-client.js');
         orderTracker = module.default;
-        console.log('✅ Supabase client loaded successfully');
         return true;
     } catch (error) {
         console.warn('⚠️ Supabase client not available:', error);
@@ -44,6 +43,7 @@ let web3Provider = null;
 let signer = null;
 let userAddress = null;
 let nftContract = null;
+let connectedWalletType = 'abstract'; // 'abstract' or 'metamask'
 
 // NFT Contract Configuration (loaded from config.js)
 const NFT_CONTRACT_ADDRESS = window.APP_CONFIG?.NFT_CONTRACT_ADDRESS || "0xYourMojoNFTContractAddress";
@@ -349,7 +349,6 @@ async function fetchMojoPrice() {
             MOJO_TOKEN.currentPrice = parseFloat(pair.priceUsd) || 0.001;
             MOJO_TOKEN.priceLastUpdated = Date.now();
             
-            console.log(`🪙 MOJO token price updated: $${MOJO_TOKEN.currentPrice.toFixed(6)}`);
             
             // Update pricing display
             updatePricingDisplay();
@@ -415,7 +414,6 @@ function findMenuItem(itemId, category) {
 
 // Initialize MOJO pricing
 async function initializeMojoPricing() {
-    console.log('🪙 Initializing MOJO token pricing...');
     await fetchMojoPrice();
     
     // Update price every 5 minutes
@@ -424,11 +422,84 @@ async function initializeMojoPricing() {
 
 // === WEB3 WALLET CONNECTION ===
 
-// Connect to MetaMask wallet
+// Show wallet selection or disconnect if already connected
 async function connectWallet() {
+    // Check if already connected
+    if (userAddress) {
+        disconnectWallet();
+        return;
+    }
+    
+    showWalletModal();
+}
+
+// Show wallet selection modal
+function showWalletModal() {
+    // Create modal HTML
+    const modalHTML = `
+        <div id="walletModal" class="wallet-modal">
+            <div class="wallet-modal-content">
+                <div class="wallet-modal-header">
+                    <h3>Connect Your Wallet</h3>
+                    <button class="wallet-modal-close" onclick="closeWalletModal()">&times;</button>
+                </div>
+                <div class="wallet-options">
+                    <button class="wallet-option primary" onclick="connectAbstract()">
+                        <img src="abstract.png" alt="Abstract" class="wallet-option-logo" />
+                        <div class="wallet-option-info">
+                            <div class="wallet-option-name">Abstract</div>
+                            <div class="wallet-option-desc">Recommended • Fast & Low Fees</div>
+                        </div>
+                    </button>
+                    <button class="wallet-option" onclick="connectMetaMask()">
+                        <img src="metamask-logo.png" alt="MetaMask" class="wallet-option-logo" />
+                        <div class="wallet-option-info">
+                            <div class="wallet-option-name">MetaMask</div>
+                            <div class="wallet-option-desc">Popular Web3 Wallet</div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Add modal to page
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Close modal when clicking outside
+    document.getElementById('walletModal').addEventListener('click', (e) => {
+        if (e.target.id === 'walletModal') {
+            closeWalletModal();
+        }
+    });
+}
+
+// Close wallet modal
+function closeWalletModal() {
+    const modal = document.getElementById('walletModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+// Connect to Abstract (primary option)
+async function connectAbstract() {
+    closeWalletModal();
+    return await connectToWallet('abstract');
+}
+
+// Connect to MetaMask (secondary option)
+async function connectMetaMask() {
+    closeWalletModal();
+    return await connectToWallet('metamask');
+}
+
+// Generic wallet connection function
+async function connectToWallet(walletType = 'abstract') {
     try {
         if (typeof window.ethereum === 'undefined') {
-            showNotification('🦊 Please install MetaMask to mint NFTs!', 'error');
+            const walletName = walletType === 'abstract' ? 'Abstract Wallet or MetaMask' : 'MetaMask';
+            showNotification(`🦊 Please install ${walletName} to mint NFTs!`, 'error');
             return false;
         }
 
@@ -444,6 +515,7 @@ async function connectWallet() {
         web3Provider = new ethers.providers.Web3Provider(window.ethereum);
         signer = web3Provider.getSigner();
         userAddress = accounts[0];
+        connectedWalletType = walletType;
 
         // Initialize NFT contract
         nftContract = new ethers.Contract(NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI, signer);
@@ -451,7 +523,8 @@ async function connectWallet() {
         // Update UI
         updateWalletUI(true);
         
-        showNotification(`🎉 Wallet connected: ${userAddress.slice(0,6)}...${userAddress.slice(-4)}`, 'success');
+        const walletName = walletType === 'abstract' ? 'Abstract' : 'MetaMask';
+        showNotification(`🎉 ${walletName} connected: ${userAddress.slice(0,6)}...${userAddress.slice(-4)}`, 'success');
         
         // Listen for account changes
         window.ethereum.on('accountsChanged', handleAccountsChanged);
@@ -465,16 +538,22 @@ async function connectWallet() {
     }
 }
 
+// Disconnect wallet
+function disconnectWallet() {
+    web3Provider = null;
+    signer = null;
+    userAddress = null;
+    nftContract = null;
+    connectedWalletType = 'abstract';
+    updateWalletUI(false);
+    showNotification('👋 Wallet disconnected', 'info');
+}
+
 // Handle account changes
 function handleAccountsChanged(accounts) {
     if (accounts.length === 0) {
         // User disconnected
-        web3Provider = null;
-        signer = null;
-        userAddress = null;
-        nftContract = null;
-        updateWalletUI(false);
-        showNotification('👋 Wallet disconnected', 'info');
+        disconnectWallet();
     } else {
         // Account changed
         userAddress = accounts[0];
@@ -493,14 +572,25 @@ function handleChainChanged(chainId) {
 function updateWalletUI(connected) {
     const walletBtn = document.getElementById('walletBtn');
     const mintBtn = document.getElementById('mintBtn');
+    const walletLogo = walletBtn.querySelector('.wallet-logo');
     
     if (connected && userAddress) {
-        walletBtn.textContent = `🟢 ${userAddress.slice(0,6)}...${userAddress.slice(-4)}`;
+        // Update logo based on connected wallet type
+        if (connectedWalletType === 'metamask') {
+            walletLogo.src = 'metamask-logo.png';
+            walletLogo.alt = 'MetaMask';
+        } else {
+            walletLogo.src = 'abstract.png';
+            walletLogo.alt = 'Abstract';
+        }
+        
+        walletBtn.innerHTML = `<img src="${walletLogo.src}" alt="${walletLogo.alt}" class="wallet-logo" /> 🟢 ${userAddress.slice(0,6)}...${userAddress.slice(-4)}`;
         walletBtn.classList.add('connected');
         mintBtn.disabled = false;
         mintBtn.textContent = '🎨 MINT NFT';
     } else {
-        walletBtn.textContent = '🦊 Connect Wallet';
+        // Default to Abstract logo when disconnected
+        walletBtn.innerHTML = '<img src="abstract.png" alt="Abstract" class="wallet-logo" /> Connect Wallet';
         walletBtn.classList.remove('connected');
         mintBtn.disabled = true;
         mintBtn.textContent = '🔒 Connect Wallet First';
@@ -713,16 +803,13 @@ async function mintNFT() {
 // Record order globally in Supabase
 async function recordGlobalOrder(orderData) {
     try {
-        console.log('🔍 Recording order with data:', orderData);
         
         if (!orderTracker) {
-            console.log('📝 Order recorded locally only (Supabase not available)');
             return { success: false, reason: 'Supabase not available' };
         }
 
         const result = await orderTracker.recordOrder(orderData);
         if (result.success) {
-            console.log('✅ Global order recorded successfully');
             // Update global stats after successful recording
             updateGlobalStats();
             return { success: true };
@@ -756,7 +843,6 @@ async function updateGlobalStats() {
             if (ordersServedElement) {
                 ordersServedElement.textContent = globalCount.count.toLocaleString();
             }
-            console.log(`📊 Global order count updated: ${globalCount.count}`);
         }
     } catch (error) {
         console.warn('⚠️ Could not update global stats:', error);
@@ -782,16 +868,13 @@ async function initializeGlobalStats() {
         const connectionTest = await Promise.race([connectionPromise, timeoutPromise]);
         
         if (connectionTest.success) {
-            console.log('✅ Supabase connected successfully');
             await updateGlobalStats();
             
             // Start real-time subscription for live updates
             setupLiveOrderTracking();
-        } else {
-            console.warn('⚠️ Supabase connection failed, using local stats only');
         }
     } catch (error) {
-        console.warn('⚠️ Supabase unavailable, using local stats only:', error);
+        // Supabase unavailable, using local stats only
     }
 }
 
@@ -799,7 +882,6 @@ async function initializeGlobalStats() {
 function setupLiveOrderTracking() {
     try {
         if (!orderTracker) {
-            console.log('📡 Live order tracking not available (Supabase not loaded)');
             return;
         }
 
@@ -811,7 +893,6 @@ function setupLiveOrderTracking() {
             },
             // When an order is updated (less common)
             (updatedOrder) => {
-                console.log('🔄 Order updated:', updatedOrder);
             }
         );
     } catch (error) {
@@ -941,25 +1022,15 @@ function createMenuItem(category, item) {
 
 // Create and populate menu items for all MOJO trait categories
 function createMenuItems() {
-    console.log('🚀 Starting createMenuItems function');
-    console.log('📋 menuItems object:', menuItems);
     
     // Initialize background menu items
     const backgroundContainer = document.getElementById('backgroundMenuItems');
-    console.log('🔍 Background container found:', !!backgroundContainer);
-    console.log('📦 Background container element:', backgroundContainer);
     
     if (backgroundContainer) {
         backgroundContainer.innerHTML = '';
-        console.log('🎨 Creating', menuItems.backgrounds.length, 'background items');
         
-        // Test creating one item first
-        const testItem = createMenuItem('backgrounds', menuItems.backgrounds[0]);
-        console.log('🧪 Test item created:', testItem);
-        backgroundContainer.appendChild(testItem);
-        
-        // Create the rest
-        menuItems.backgrounds.slice(1).forEach(background => {
+        // Create background menu items
+        menuItems.backgrounds.forEach(background => {
             const item = createMenuItem('backgrounds', background);
             backgroundContainer.appendChild(item);
             console.log('✅ Added background item:', background.name);
@@ -975,8 +1046,6 @@ function createMenuItems() {
         clothesContainer.innerHTML = '';
         console.log('🎨 Creating', menuItems.clothes.length, 'clothes items');
         
-        // Add a simple test to see if we can add anything
-        clothesContainer.innerHTML = '<div style="background: red; color: white; padding: 10px;">TEST CLOTHES</div>';
         console.log('🧪 Added test clothes element');
         
         // Try adding real items
@@ -1093,16 +1162,19 @@ function selectMenuItem(category, itemId, element) {
                 break;
         }
         
-        // Update PFP and order summary
-        const layerType = category === 'backgrounds' ? 'background' :
-                          category === 'clothes' ? 'clothes' :
-                          category === 'eyes' ? 'eyes' :
-                          category === 'heads' ? 'head' :
-                          category === 'mouths' ? 'mouth' : category;
-        
-        loadLayer(layerType, itemId);
-        updateOrderSummary();
-        updatePremiumPriceSummary();
+        // Ensure base layer is always loaded before loading other traits
+        ensureBaseLayerLoaded(() => {
+            // Update PFP and order summary
+            const layerType = category === 'backgrounds' ? 'background' :
+                              category === 'clothes' ? 'clothes' :
+                              category === 'eyes' ? 'eyes' :
+                              category === 'heads' ? 'head' :
+                              category === 'mouths' ? 'mouth' : category;
+            
+            loadLayer(layerType, itemId);
+            updateOrderSummary();
+            updatePremiumPriceSummary();
+        });
         
         // Play selection sound
         playSound('select');
@@ -1394,13 +1466,37 @@ function loadBaseImage() {
     layers.base = new Image();
     layers.base.onload = () => {
         drawPFP();
-        console.log('✅ Base Paco chicken loaded');
     };
     layers.base.onerror = () => {
-        console.error('Failed to load base image');
-        showNotification('❌ Error loading base chicken');
+        showNotification('❌ Error loading base MOJO');
     };
-    layers.base.src = 'assets/base/PACO.png';
+    layers.base.src = 'assets/BASE/MOJO BODY.png';
+}
+
+// Ensure base layer is always loaded before other operations
+function ensureBaseLayerLoaded(callback) {
+    if (layers.base && layers.base.complete) {
+        // Base layer already loaded, execute callback
+        callback();
+    } else {
+        // Load base layer first
+        if (!layers.base) {
+            layers.base = new Image();
+            layers.base.onload = () => {
+                callback();
+            };
+            layers.base.onerror = () => {
+                showNotification('❌ Error loading base MOJO');
+                callback(); // Still execute callback to prevent hanging
+            };
+            layers.base.src = 'assets/BASE/MOJO BODY.png';
+        } else {
+            // Base layer is loading, wait for it
+            layers.base.onload = () => {
+                callback();
+            };
+        }
+    }
 }
 
 function drawPFP() {
@@ -1569,8 +1665,16 @@ function randomizePFP() {
         const mouthElement = document.querySelector(`[data-category="mouths"][data-value="${randomMouth.id}"]`);
         if (mouthElement) mouthElement.classList.add('selected');
         
-        // Update display
-        updatePFPCanvas();
+        // Ensure base layer is loaded, then update display
+        ensureBaseLayerLoaded(() => {
+            loadLayer('background', randomBackground.id);
+            loadLayer('clothes', randomClothes.id);
+            loadLayer('eyes', randomEyes.id);
+            loadLayer('head', randomHead.id);
+            loadLayer('mouth', randomMouth.id);
+            updateOrderSummary();
+            updatePremiumPriceSummary();
+        });
         showNotification(`🎲 Random MOJO created!`);
         
     } catch (error) {
@@ -1600,7 +1704,11 @@ function clearOrder() {
         });
         
         // Update display
-        updatePFPCanvas();
+        // Ensure base layer is loaded and redraw
+        ensureBaseLayerLoaded(() => {
+            drawPFP();
+            updateOrderSummary();
+        });
         showNotification('🗑️ MOJO reset to default');
         
     } catch (error) {
@@ -2417,48 +2525,7 @@ function playSound(soundType) {
     }
 }
 
-// Load base image for canvas
-function loadBaseImage() {
-    try {
-        const canvas = document.getElementById('pfpCanvas');
-        if (!canvas) {
-            console.log('Canvas not found');
-            return;
-        }
-        
-        const ctx = canvas.getContext('2d');
-        if (!ctx) {
-            console.log('Canvas context not available');
-            return;
-        }
-        
-        // Clear canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        // Load base image
-        const baseImg = new Image();
-        baseImg.crossOrigin = 'anonymous';
-        baseImg.onload = function() {
-            try {
-                ctx.drawImage(baseImg, 0, 0, canvas.width, canvas.height);
-                console.log('✅ Base image loaded');
-                
-                // Load additional layers if needed
-                loadSelectedLayers();
-            } catch (error) {
-                console.error('Error drawing base image:', error);
-            }
-        };
-        baseImg.onerror = function() {
-            console.error('Failed to load base image');
-            // Draw fallback
-            drawFallbackImage(ctx, canvas);
-        };
-        baseImg.src = 'assets/BASE/MOJO BODY.png';
-    } catch (error) {
-        console.error('Error in loadBaseImage:', error);
-    }
-}
+// This duplicate function has been removed - using the main loadBaseImage function above
 
 // Load selected hat and item layers
 function loadSelectedLayers() {
@@ -2735,59 +2802,3 @@ async function recordOrderAndUpdateUI() {
 
 // Note: Duplicate functions have been removed - original implementations are above
 
-// === DEBUG FUNCTIONS ===
-
-// Test Supabase connection (can be called from browser console)
-window.testSupabaseConnection = async function() {
-    console.log('🔍 Testing Supabase connection...');
-    
-    if (!orderTracker) {
-        console.error('❌ OrderTracker not loaded');
-        return false;
-    }
-    
-    try {
-        const result = await orderTracker.testConnection();
-        if (result.success) {
-            console.log('✅ Supabase connection successful!');
-            
-            // Test getting order count
-            const countResult = await orderTracker.getGlobalOrderCount();
-            if (countResult.success) {
-                console.log(`📊 Current global order count: ${countResult.count}`);
-            } else {
-                console.warn('⚠️ Could not get order count:', countResult.error);
-            }
-            
-            return true;
-        } else {
-            console.error('❌ Supabase connection failed:', result.error);
-            return false;
-        }
-    } catch (error) {
-        console.error('❌ Connection test error:', error);
-        return false;
-    }
-};
-
-// Test order recording (can be called from browser console)
-window.testOrderRecording = async function() {
-    console.log('🔍 Testing order recording...');
-    
-    const testOrder = {
-        hat: 'test-hat',
-        hatName: 'Test Hat',
-        item: 'test-item', 
-        itemName: 'Test Item',
-        total: 12.34
-    };
-    
-    const result = await recordGlobalOrder(testOrder);
-    if (result && result.success) {
-        console.log('✅ Test order recorded successfully!');
-        return true;
-    } else {
-        console.error('❌ Test order recording failed:', result?.error || 'Unknown error');
-        return false;
-    }
-}; 

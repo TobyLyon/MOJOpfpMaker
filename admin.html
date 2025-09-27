@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MOJO NFT Collection - Admin Panel</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico?v=2">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png?v=2">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png?v=2">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=2">
+    <link rel="shortcut icon" href="favicon.ico?v=2">
     <!-- Paco Platform Fee Wallet: Configured via environment variable -->
     <link rel="stylesheet" href="styles.css">
     <style>
@@ -121,12 +127,68 @@
             margin-left: 0.5rem;
         }
         
+        /* Admin Controls Styling */
+        .admin-controls h2 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+        
+        .admin-section {
+            margin-bottom: 2rem;
+        }
+        
+        .admin-section h3 {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .admin-section p {
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+        
+        .btn-warning {
+            background: var(--restaurant-orange);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-base);
+        }
+        
+        .btn-warning:hover {
+            background: #e67e22;
+            transform: translateY(-1px);
+        }
+        
+        .btn-danger {
+            background: var(--restaurant-red);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-base);
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+            transform: translateY(-1px);
+        }
+        
         @media (max-width: 768px) {
             .form-row {
                 grid-template-columns: 1fr;
             }
             .admin-container {
                 margin: 1rem;
+                padding: 1rem;
+            }
+            
+            .admin-section {
                 padding: 1rem;
             }
         }
@@ -318,6 +380,108 @@
                     <p>Use one of the deployment options above to create your NFT contract.</p>
                     <p>After deployment, update the contract address in your main application.</p>
                 </div>
+            </div>
+        </div>
+
+        <!-- Admin Controls Section -->
+        <div class="admin-controls" id="adminControls" style="margin-top: 3rem;">
+            <h2>⚙️ Contract Management</h2>
+            <p>Manage your deployed NFT contract settings</p>
+            
+            <!-- Contract Address Input -->
+            <div class="form-group" style="margin-bottom: 2rem;">
+                <label for="contractAddress">Contract Address</label>
+                <input type="text" id="contractAddress" placeholder="0x..." style="width: 100%;">
+                <small style="color: var(--text-muted); margin-top: 0.5rem; display: block;">Enter your deployed contract address to enable management features</small>
+            </div>
+            
+            <!-- Payout Wallet Management -->
+            <div class="admin-section" style="background: var(--surface-darker); padding: 1.5rem; border-radius: var(--border-radius-md); margin-bottom: 2rem; border-left: 4px solid var(--restaurant-green);">
+                <h3>💰 Payout Wallet Configuration</h3>
+                <p>Set where NFT sale proceeds and royalties are sent</p>
+                
+                <div class="form-group">
+                    <label for="payoutWallet">Payout Wallet Address</label>
+                    <input type="text" id="payoutWallet" placeholder="0x6Dc7277Da5842041f4af527Fe6f6A209EF03BED4" style="width: 100%;">
+                </div>
+                
+                <div class="form-row" style="margin-top: 1rem;">
+                    <button class="btn btn-secondary" onclick="loadCurrentPayoutWallet()" style="margin-right: 1rem;">
+                        📋 Load Current
+                    </button>
+                    <button class="btn btn-primary" onclick="updatePayoutWallet()">
+                        💾 Update Payout Wallet
+                    </button>
+                </div>
+                
+                <div id="payoutStatus" style="margin-top: 1rem; display: none;"></div>
+            </div>
+            
+            <!-- Supply Management -->
+            <div class="admin-section" style="background: var(--surface-darker); padding: 1.5rem; border-radius: var(--border-radius-md); margin-bottom: 2rem; border-left: 4px solid var(--restaurant-red);">
+                <h3>📊 Supply Management</h3>
+                <p>Manage the maximum supply of your NFT collection</p>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="currentSupply">Current Supply</label>
+                        <input type="text" id="currentSupply" readonly style="background: var(--surface-accent);">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="currentMaxSupply">Current Max Supply</label>
+                        <input type="text" id="currentMaxSupply" readonly style="background: var(--surface-accent);">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="newMaxSupply">New Max Supply</label>
+                    <input type="number" id="newMaxSupply" placeholder="5000" min="1">
+                    <small style="color: var(--text-muted); margin-top: 0.5rem; display: block;">⚠️ Can only be reduced, not increased. This will limit future minting.</small>
+                </div>
+                
+                <div class="form-row" style="margin-top: 1rem;">
+                    <button class="btn btn-secondary" onclick="loadSupplyInfo()" style="margin-right: 1rem;">
+                        📊 Refresh Supply Info
+                    </button>
+                    <button class="btn btn-warning" onclick="updateMaxSupply()" style="margin-right: 1rem;">
+                        ⚠️ Reduce Max Supply
+                    </button>
+                    <button class="btn btn-danger" onclick="burnTokens()">
+                        🔥 Burn Unsold Supply
+                    </button>
+                </div>
+                
+                <div id="supplyStatus" style="margin-top: 1rem; display: none;"></div>
+            </div>
+            
+            <!-- Mint Price Management -->
+            <div class="admin-section" style="background: var(--surface-darker); padding: 1.5rem; border-radius: var(--border-radius-md); margin-bottom: 2rem; border-left: 4px solid var(--restaurant-blue);">
+                <h3>💎 Pricing Controls</h3>
+                <p>Adjust the mint price for your NFTs</p>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="currentMintPrice">Current Mint Price (ETH)</label>
+                        <input type="text" id="currentMintPrice" readonly style="background: var(--surface-accent);">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="newMintPrice">New Mint Price (ETH)</label>
+                        <input type="number" id="newMintPrice" placeholder="0.01" step="0.001" min="0">
+                    </div>
+                </div>
+                
+                <div class="form-row" style="margin-top: 1rem;">
+                    <button class="btn btn-secondary" onclick="loadMintPrice()" style="margin-right: 1rem;">
+                        💰 Load Current Price
+                    </button>
+                    <button class="btn btn-primary" onclick="updateMintPrice()">
+                        💾 Update Mint Price
+                    </button>
+                </div>
+                
+                <div id="priceStatus" style="margin-top: 1rem; display: none;"></div>
             </div>
         </div>
     </div>
@@ -744,6 +908,225 @@ contract MojoNFT_Template is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard 
             document.getElementById('mintPrice').value = '0.01';
             document.getElementById('royaltyPercent').value = '7.5';
         });
+
+        // ===== ADMIN CONTRACT MANAGEMENT FUNCTIONS =====
+        
+        let adminContract = null;
+        let adminSigner = null;
+        
+        // Standard NFT ABI for admin functions
+        const ADMIN_NFT_ABI = [
+            "function owner() view returns (address)",
+            "function totalSupply() view returns (uint256)",
+            "function MAX_SUPPLY() view returns (uint256)",
+            "function mintPrice() view returns (uint256)",
+            "function setMintPrice(uint256 newPrice) external",
+            "function setMaxSupply(uint256 newMaxSupply) external",
+            "function withdraw() external",
+            "function transferOwnership(address newOwner) external",
+            "function royaltyInfo(uint256, uint256) view returns (address, uint256)",
+            "function burn(uint256 tokenId) external"
+        ];
+        
+        // Initialize admin contract
+        async function initializeAdminContract() {
+            const contractAddress = document.getElementById('contractAddress').value.trim();
+            
+            if (!contractAddress || !ethers.utils.isAddress(contractAddress)) {
+                showAdminStatus('Please enter a valid contract address', 'error');
+                return false;
+            }
+            
+            if (!web3Provider) {
+                const connected = await connectWallet();
+                if (!connected) return false;
+            }
+            
+            try {
+                adminContract = new ethers.Contract(contractAddress, ADMIN_NFT_ABI, signer);
+                adminSigner = signer;
+                
+                // Verify user is owner
+                const owner = await adminContract.owner();
+                const currentUser = await signer.getAddress();
+                
+                if (owner.toLowerCase() !== currentUser.toLowerCase()) {
+                    showAdminStatus('❌ You are not the owner of this contract', 'error');
+                    return false;
+                }
+                
+                showAdminStatus('✅ Contract connected successfully', 'success');
+                return true;
+            } catch (error) {
+                showAdminStatus(`❌ Failed to connect to contract: ${error.message}`, 'error');
+                return false;
+            }
+        }
+        
+        // Load current payout wallet
+        async function loadCurrentPayoutWallet() {
+            if (!await initializeAdminContract()) return;
+            
+            try {
+                const owner = await adminContract.owner();
+                document.getElementById('payoutWallet').value = owner;
+                showPayoutStatus('✅ Current payout wallet loaded', 'success');
+            } catch (error) {
+                showPayoutStatus(`❌ Error loading payout wallet: ${error.message}`, 'error');
+            }
+        }
+        
+        // Update payout wallet (transfer ownership)
+        async function updatePayoutWallet() {
+            if (!await initializeAdminContract()) return;
+            
+            const newWallet = document.getElementById('payoutWallet').value.trim();
+            
+            if (!newWallet || !ethers.utils.isAddress(newWallet)) {
+                showPayoutStatus('❌ Please enter a valid wallet address', 'error');
+                return;
+            }
+            
+            try {
+                showPayoutStatus('🔄 Updating payout wallet...', 'info');
+                
+                const tx = await adminContract.transferOwnership(newWallet);
+                await tx.wait();
+                
+                showPayoutStatus('✅ Payout wallet updated successfully!', 'success');
+            } catch (error) {
+                showPayoutStatus(`❌ Failed to update payout wallet: ${error.message}`, 'error');
+            }
+        }
+        
+        // Load supply information
+        async function loadSupplyInfo() {
+            if (!await initializeAdminContract()) return;
+            
+            try {
+                const totalSupply = await adminContract.totalSupply();
+                const maxSupply = await adminContract.MAX_SUPPLY();
+                
+                document.getElementById('currentSupply').value = totalSupply.toString();
+                document.getElementById('currentMaxSupply').value = maxSupply.toString();
+                
+                showSupplyStatus('✅ Supply information loaded', 'success');
+            } catch (error) {
+                showSupplyStatus(`❌ Error loading supply info: ${error.message}`, 'error');
+            }
+        }
+        
+        // Update max supply (reduce only)
+        async function updateMaxSupply() {
+            if (!await initializeAdminContract()) return;
+            
+            const newMaxSupply = parseInt(document.getElementById('newMaxSupply').value);
+            const currentMaxSupply = parseInt(document.getElementById('currentMaxSupply').value);
+            
+            if (!newMaxSupply || newMaxSupply <= 0) {
+                showSupplyStatus('❌ Please enter a valid max supply', 'error');
+                return;
+            }
+            
+            if (newMaxSupply >= currentMaxSupply) {
+                showSupplyStatus('❌ New max supply must be less than current max supply', 'error');
+                return;
+            }
+            
+            try {
+                showSupplyStatus('🔄 Updating max supply...', 'info');
+                
+                const tx = await adminContract.setMaxSupply(newMaxSupply);
+                await tx.wait();
+                
+                showSupplyStatus(`✅ Max supply reduced to ${newMaxSupply}`, 'success');
+                loadSupplyInfo(); // Refresh the display
+            } catch (error) {
+                showSupplyStatus(`❌ Failed to update max supply: ${error.message}`, 'error');
+            }
+        }
+        
+        // Burn tokens (reduce circulating supply)
+        async function burnTokens() {
+            if (!confirm('⚠️ This will permanently destroy unsold NFT slots. Are you sure?')) {
+                return;
+            }
+            
+            showSupplyStatus('🔥 Burn functionality requires custom implementation based on your contract', 'warning');
+        }
+        
+        // Load current mint price
+        async function loadMintPrice() {
+            if (!await initializeAdminContract()) return;
+            
+            try {
+                const mintPrice = await adminContract.mintPrice();
+                const priceInEth = ethers.utils.formatEther(mintPrice);
+                
+                document.getElementById('currentMintPrice').value = priceInEth;
+                showPriceStatus('✅ Current mint price loaded', 'success');
+            } catch (error) {
+                showPriceStatus(`❌ Error loading mint price: ${error.message}`, 'error');
+            }
+        }
+        
+        // Update mint price
+        async function updateMintPrice() {
+            if (!await initializeAdminContract()) return;
+            
+            const newPrice = parseFloat(document.getElementById('newMintPrice').value);
+            
+            if (isNaN(newPrice) || newPrice < 0) {
+                showPriceStatus('❌ Please enter a valid price', 'error');
+                return;
+            }
+            
+            try {
+                showPriceStatus('🔄 Updating mint price...', 'info');
+                
+                const priceInWei = ethers.utils.parseEther(newPrice.toString());
+                const tx = await adminContract.setMintPrice(priceInWei);
+                await tx.wait();
+                
+                showPriceStatus(`✅ Mint price updated to ${newPrice} ETH`, 'success');
+                loadMintPrice(); // Refresh the display
+            } catch (error) {
+                showPriceStatus(`❌ Failed to update mint price: ${error.message}`, 'error');
+            }
+        }
+        
+        // Status display functions
+        function showAdminStatus(message, type) {
+            // Use existing updateStatus function
+            updateStatus(message, type);
+        }
+        
+        function showPayoutStatus(message, type) {
+            const statusDiv = document.getElementById('payoutStatus');
+            statusDiv.style.display = 'block';
+            statusDiv.textContent = message;
+            statusDiv.style.color = type === 'success' ? 'var(--restaurant-green)' : 
+                                   type === 'error' ? 'var(--restaurant-red)' : 
+                                   type === 'warning' ? 'var(--restaurant-orange)' : 'var(--restaurant-yellow)';
+        }
+        
+        function showSupplyStatus(message, type) {
+            const statusDiv = document.getElementById('supplyStatus');
+            statusDiv.style.display = 'block';
+            statusDiv.textContent = message;
+            statusDiv.style.color = type === 'success' ? 'var(--restaurant-green)' : 
+                                   type === 'error' ? 'var(--restaurant-red)' : 
+                                   type === 'warning' ? 'var(--restaurant-orange)' : 'var(--restaurant-yellow)';
+        }
+        
+        function showPriceStatus(message, type) {
+            const statusDiv = document.getElementById('priceStatus');
+            statusDiv.style.display = 'block';
+            statusDiv.textContent = message;
+            statusDiv.style.color = type === 'success' ? 'var(--restaurant-green)' : 
+                                   type === 'error' ? 'var(--restaurant-red)' : 
+                                   type === 'warning' ? 'var(--restaurant-orange)' : 'var(--restaurant-yellow)';
+        }
     </script>
 </body>
 </html>
