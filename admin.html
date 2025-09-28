@@ -279,21 +279,13 @@
             </div>
             
             <div class="deployment-options" style="margin: 2rem 0;">
-                <h3>🚀 Deployment Options:</h3>
+                <h3>🚀 Deploy Your MOJO Contract:</h3>
                 
-                <div class="option-card" style="background: var(--surface-darker); padding: 1.5rem; border-radius: var(--border-radius-md); margin-bottom: 1rem; border: 2px solid var(--restaurant-green);">
-                    <h4>✅ Option 1: Easy Deploy (Recommended)</h4>
-                    <p>Use Remix IDE - no technical setup required</p>
-                    <button class="deploy-btn" onclick="showRemixInstructions()" style="background: var(--restaurant-green);">
-                        📖 Show Step-by-Step Guide
-                    </button>
-                </div>
-                
-                <div class="option-card" style="background: var(--surface-darker); padding: 1.5rem; border-radius: var(--border-radius-md); border: 1px solid var(--surface-accent);">
-                    <h4>⚡ Option 2: Advanced Deploy</h4>
-                    <p>Deploy directly from this page (requires MetaMask)</p>
-                    <button class="deploy-btn" onclick="deployContract()" id="deployBtn">
-                        🚀 Deploy Contract Now
+                <div class="option-card" style="background: var(--glass-bg-dark); padding: 1.5rem; border-radius: var(--border-radius-md); margin-bottom: 1rem; border: 2px solid var(--mojo-ice); border: 1px solid var(--glass-border);">
+                    <h4>📖 Deploy via Remix IDE (Recommended)</h4>
+                    <p>Copy contract code and deploy manually - no gas fees until you're ready</p>
+                    <button class="deploy-btn" onclick="showRemixInstructions()" style="background: var(--mojo-ice); color: var(--mojo-dark);">
+                        📋 Get Contract Code & Instructions
                     </button>
                 </div>
             </div>
@@ -386,13 +378,15 @@
         </div>
 
         <div class="deployed-contracts" id="deployedContracts">
-            <h3>📋 Contract Status</h3>
-            <div id="contractsList">
-                <div style="background: var(--surface-darker); padding: 1rem; border-radius: var(--border-radius-md); border-left: 4px solid var(--restaurant-yellow);">
-                    <p><strong>⚠️ No contract deployed yet</strong></p>
-                    <p>Use one of the deployment options above to create your NFT contract.</p>
-                    <p>After deployment, update the contract address in your main application.</p>
-                </div>
+            <h3>📋 Next Steps</h3>
+            <div style="background: var(--glass-bg-dark); padding: 1rem; border-radius: var(--border-radius-md); border-left: 4px solid var(--mojo-ice); border: 1px solid var(--glass-border);">
+                <p><strong>After deploying via Remix:</strong></p>
+                <ol style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                    <li>Copy your deployed contract address</li>
+                    <li>Update <code>NFT_CONTRACT_ADDRESS</code> in your main app's <code>config.js</code></li>
+                    <li>Use the Contract Management section below to configure your collection</li>
+                    <li>Set up Pinata IPFS integration in your main app</li>
+                </ol>
             </div>
         </div>
 
@@ -468,6 +462,30 @@
                 <div id="supplyStatus" style="margin-top: 1rem; display: none;"></div>
             </div>
             
+            <!-- Minting Controls -->
+            <div class="admin-section" style="background: var(--glass-bg-dark); padding: 1.5rem; border-radius: var(--border-radius-md); margin-bottom: 2rem; border-left: 4px solid var(--mojo-ice); border: 1px solid var(--glass-border);">
+                <h3>🎛️ Minting Controls</h3>
+                <p>Enable or disable minting for your collection</p>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="currentMintingState">Current Minting State</label>
+                        <input type="text" id="currentMintingState" readonly style="background: var(--surface-accent);">
+                    </div>
+                </div>
+                
+                <div class="form-row" style="margin-top: 1rem;">
+                    <button class="btn btn-secondary" onclick="loadMintingState()" style="margin-right: 1rem;">
+                        🔄 Refresh State
+                    </button>
+                    <button class="btn btn-warning" onclick="toggleMintingState()">
+                        ⏯️ Toggle Minting
+                    </button>
+                </div>
+                
+                <div id="mintingStatus" style="margin-top: 1rem; display: none;"></div>
+            </div>
+
             <!-- Mint Price Management -->
             <div class="admin-section" style="background: var(--surface-darker); padding: 1.5rem; border-radius: var(--border-radius-md); margin-bottom: 2rem; border-left: 4px solid var(--restaurant-blue);">
                 <h3>💎 Pricing Controls</h3>
@@ -629,12 +647,7 @@ contract MojoNFT_Template is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard 
     }
 }`;
         
-        const FACTORY_ABI = [
-            "function deployCollection(string memory collectionName, string memory symbol, uint256 mintPrice, uint256 maxSupply, address royaltyReceiver, uint96 royaltyPercent) external payable returns (address)",
-            "function getCreatorContracts(address creator) external view returns (address[] memory)",
-            "function deploymentFee() external view returns (uint256)",
-            "event CollectionDeployed(address indexed creator, address indexed contractAddress, string collectionName, string symbol)"
-        ];
+        // No factory needed - direct contract deployment via Remix
         
         let web3Provider = null;
         let signer = null;
@@ -670,109 +683,7 @@ contract MojoNFT_Template is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard 
             }
         }
         
-        async function deployContract() {
-            try {
-                // Validate form
-                const collectionName = document.getElementById('collectionName').value.trim();
-                const symbol = document.getElementById('symbol').value.trim().toUpperCase();
-                const maxSupply = parseInt(document.getElementById('maxSupply').value);
-                const mintPrice = parseFloat(document.getElementById('mintPrice').value);
-                const royaltyPercent = parseFloat(document.getElementById('royaltyPercent').value);
-                const royaltyReceiver = document.getElementById('royaltyReceiver').value.trim();
-                const network = document.getElementById('network').value;
-                
-                if (!collectionName || !symbol || !maxSupply || !mintPrice || !royaltyReceiver || !network) {
-                    updateStatus('Please fill in all fields', 'error');
-                    return;
-                }
-                
-                if (!ethers.utils.isAddress(royaltyReceiver)) {
-                    updateStatus('Invalid royalty receiver address', 'error');
-                    return;
-                }
-                
-                // Connect wallet if not connected
-                if (!web3Provider) {
-                    const connected = await connectWallet();
-                    if (!connected) return;
-                }
-                
-                // Get factory contract
-                const factoryAddress = FACTORY_ADDRESSES[network];
-                if (!factoryAddress) {
-                    updateStatus('Network not supported yet', 'error');
-                    return;
-                }
-                
-                const factory = new ethers.Contract(factoryAddress, FACTORY_ABI, signer);
-                
-                // Get deployment fee
-                updateStatus('Getting deployment fee...', 'info');
-                const deploymentFee = await factory.deploymentFee();
-                
-                // Prepare parameters
-                const mintPriceWei = ethers.utils.parseEther(mintPrice.toString());
-                const royaltyBasisPoints = Math.round(royaltyPercent * 100); // Convert % to basis points
-                
-                updateStatus('Deploying contract...', 'info');
-                setDeployButtonState(true);
-                
-                // Deploy contract
-                const tx = await factory.deployCollection(
-                    collectionName,
-                    symbol,
-                    mintPriceWei,
-                    maxSupply,
-                    royaltyReceiver,
-                    royaltyBasisPoints,
-                    { value: deploymentFee }
-                );
-                
-                updateStatus('Transaction submitted. Waiting for confirmation...', 'info');
-                
-                // Wait for confirmation
-                const receipt = await tx.wait();
-                
-                // Find the deployed contract address from events
-                const deployEvent = receipt.events?.find(e => e.event === 'CollectionDeployed');
-                const contractAddress = deployEvent?.args?.contractAddress;
-                
-                if (contractAddress) {
-                    updateStatus(`Contract deployed successfully!`, 'success');
-                    addDeployedContract({
-                        address: contractAddress,
-                        name: collectionName,
-                        symbol: symbol,
-                        network: network,
-                        txHash: receipt.transactionHash
-                    });
-                    
-                    // Clear form
-                    document.getElementById('collectionName').value = '';
-                    document.getElementById('symbol').value = '';
-                    document.getElementById('maxSupply').value = '';
-                    document.getElementById('mintPrice').value = '';
-                    document.getElementById('royaltyPercent').value = '';
-                    document.getElementById('royaltyReceiver').value = '';
-                    document.getElementById('network').value = '';
-                } else {
-                    updateStatus('Deployment completed but contract address not found', 'warning');
-                }
-                
-            } catch (error) {
-                console.error('Deployment error:', error);
-                
-                if (error.code === 'ACTION_REJECTED') {
-                    updateStatus('Transaction rejected by user', 'error');
-                } else if (error.code === 'INSUFFICIENT_FUNDS') {
-                    updateStatus('Insufficient funds for deployment', 'error');
-                } else {
-                    updateStatus(`Deployment failed: ${error.message}`, 'error');
-                }
-            } finally {
-                setDeployButtonState(false);
-            }
-        }
+        // Contract deployment is handled via Remix IDE - no complex factory needed
         
         function updateStatus(message, type = 'info') {
             const statusSection = document.getElementById('statusSection');
@@ -789,11 +700,7 @@ contract MojoNFT_Template is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard 
                 'var(--restaurant-yellow)';
         }
         
-        function setDeployButtonState(deploying) {
-            const btn = document.getElementById('deployBtn');
-            btn.disabled = deploying;
-            btn.textContent = deploying ? '⏳ Deploying...' : '🚀 Deploy NFT Contract';
-        }
+        // Deployment handled via Remix - no button state needed
         
         function addDeployedContract(contract) {
             const contractsList = document.getElementById('contractsList');
@@ -934,11 +841,12 @@ contract MojoNFT_Template is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard 
             "function MAX_SUPPLY() view returns (uint256)",
             "function mintPrice() view returns (uint256)",
             "function setMintPrice(uint256 newPrice) external",
-            "function setMaxSupply(uint256 newMaxSupply) external",
             "function withdraw() external",
             "function transferOwnership(address newOwner) external",
             "function royaltyInfo(uint256, uint256) view returns (address, uint256)",
-            "function burn(uint256 tokenId) external"
+            "function setRoyaltyInfo(address receiver, uint96 feeNumerator) external",
+            "function mintingActive() view returns (bool)",
+            "function toggleMinting() external"
         ];
         
         // Initialize admin contract
@@ -1031,32 +939,8 @@ contract MojoNFT_Template is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard 
         
         // Update max supply (reduce only)
         async function updateMaxSupply() {
-            if (!await initializeAdminContract()) return;
-            
-            const newMaxSupply = parseInt(document.getElementById('newMaxSupply').value);
-            const currentMaxSupply = parseInt(document.getElementById('currentMaxSupply').value);
-            
-            if (!newMaxSupply || newMaxSupply <= 0) {
-                showSupplyStatus('❌ Please enter a valid max supply', 'error');
-                return;
-            }
-            
-            if (newMaxSupply >= currentMaxSupply) {
-                showSupplyStatus('❌ New max supply must be less than current max supply', 'error');
-                return;
-            }
-            
-            try {
-                showSupplyStatus('🔄 Updating max supply...', 'info');
-                
-                const tx = await adminContract.setMaxSupply(newMaxSupply);
-                await tx.wait();
-                
-                showSupplyStatus(`✅ Max supply reduced to ${newMaxSupply}`, 'success');
-                loadSupplyInfo(); // Refresh the display
-            } catch (error) {
-                showSupplyStatus(`❌ Failed to update max supply: ${error.message}`, 'error');
-            }
+            showSupplyStatus('ℹ️ Max supply is immutable on this contract. To stop future mints, use "Toggle Minting" below.', 'warning');
+            return;
         }
         
         // Burn tokens (reduce circulating supply)
@@ -1108,6 +992,36 @@ contract MojoNFT_Template is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard 
             }
         }
         
+        // Load current minting state
+        async function loadMintingState() {
+            if (!await initializeAdminContract()) return;
+            
+            try {
+                const mintingActive = await adminContract.mintingActive();
+                document.getElementById('currentMintingState').value = mintingActive ? 'ACTIVE' : 'PAUSED';
+                showMintingStatus('✅ Minting state loaded', 'success');
+            } catch (error) {
+                showMintingStatus(`❌ Error loading minting state: ${error.message}`, 'error');
+            }
+        }
+        
+        // Toggle minting state
+        async function toggleMintingState() {
+            if (!await initializeAdminContract()) return;
+            
+            try {
+                showMintingStatus('🔄 Toggling minting state...', 'info');
+                
+                const tx = await adminContract.toggleMinting();
+                await tx.wait();
+                
+                showMintingStatus('✅ Minting state toggled successfully', 'success');
+                loadMintingState(); // Refresh the display
+            } catch (error) {
+                showMintingStatus(`❌ Failed to toggle minting: ${error.message}`, 'error');
+            }
+        }
+        
         // Status display functions
         function showAdminStatus(message, type) {
             // Use existing updateStatus function
@@ -1134,6 +1048,15 @@ contract MojoNFT_Template is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard 
         
         function showPriceStatus(message, type) {
             const statusDiv = document.getElementById('priceStatus');
+            statusDiv.style.display = 'block';
+            statusDiv.textContent = message;
+            statusDiv.style.color = type === 'success' ? 'var(--restaurant-green)' : 
+                                   type === 'error' ? 'var(--restaurant-red)' : 
+                                   type === 'warning' ? 'var(--restaurant-orange)' : 'var(--restaurant-yellow)';
+        }
+        
+        function showMintingStatus(message, type) {
+            const statusDiv = document.getElementById('mintingStatus');
             statusDiv.style.display = 'block';
             statusDiv.textContent = message;
             statusDiv.style.color = type === 'success' ? 'var(--restaurant-green)' : 
