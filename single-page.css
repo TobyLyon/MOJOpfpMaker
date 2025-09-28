@@ -19,11 +19,12 @@
     
     /* Glassmorphism */
     --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-bg-dark: rgba(0, 0, 0, 0.45);
     --glass-border: rgba(255, 255, 255, 0.2);
     --glass-shadow: 0 8px 32px rgba(74, 144, 226, 0.2);
     
     /* Layout */
-    --header-height: 80px;
+    --header-height: 110px;
     --snowflake-height: 200px;
 }
 
@@ -61,7 +62,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 20px;
+    padding: 8px 20px; /* slight vertical padding so content sits centered in taller header */
 }
 
 .brand-section {
@@ -175,7 +176,7 @@ body {
     position: relative;
     border-radius: 20px;
     overflow: hidden;
-    background: var(--glass-bg);
+    background: var(--glass-bg-dark);
     backdrop-filter: blur(20px);
     border: 2px solid var(--glass-border);
     box-shadow: var(--glass-shadow);
@@ -209,6 +210,19 @@ body {
     justify-content: center;
 }
 
+/* Improve visibility of the Download button inside canvas actions */
+.canvas-actions .btn.btn-secondary {
+    background: rgba(10, 23, 35, 0.9);
+    color: #ffffff;
+    border: 1px solid rgba(135, 206, 235, 0.6);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.canvas-actions .btn.btn-secondary:hover {
+    background: rgba(20, 40, 60, 0.95);
+    border-color: rgba(135, 206, 235, 0.9);
+}
+
 .price-display {
     text-align: center;
     padding: 15px;
@@ -232,7 +246,7 @@ body {
 
 /* Traits Container */
 .traits-container {
-    background: var(--glass-bg);
+    background: var(--glass-bg-dark);
     backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border);
     border-radius: 20px;
@@ -266,13 +280,13 @@ body {
 .traits-grid {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 12px;
 }
 
 .trait-section {
     background: rgba(255, 255, 255, 0.05);
     border-radius: 12px;
-    padding: 15px;
+    padding: 10px;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 

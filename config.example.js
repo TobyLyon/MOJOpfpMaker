@@ -19,6 +19,9 @@ const CONFIG = {
     // UI Configuration
     BRAND_NAME: 'MOJO',
     COLLECTION_NAME: 'MOJO PFP Collection'
+    // Supabase (frontend safe placeholders only; fill via env at runtime)
+    SUPABASE_URL: '',
+    SUPABASE_ANON_KEY: ''
 };
 
 // Export for use in main application

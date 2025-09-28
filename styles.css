@@ -4417,8 +4417,7 @@ button:focus,
         max-width: none !important;
         width: auto !important;
     }
-}
-    
+
     .restaurant-hours {
         flex-direction: row;
         align-items: center;
@@ -4448,6 +4447,4 @@ button:focus,
         height: auto !important;
         overflow: visible !important;
     }
-} 
- 
- 
+}

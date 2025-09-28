@@ -2,8 +2,13 @@
 import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js';
 import SUPABASE_CONFIG from './supabase-config.js';
 
-// Initialize Supabase client
-const supabase = createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+// Initialize Supabase client (guard against missing config)
+if (!SUPABASE_CONFIG.url || !SUPABASE_CONFIG.anonKey) {
+    console.warn('⚠️ Supabase URL or anon key is not set. Live features will be disabled.');
+}
+const supabase = (SUPABASE_CONFIG.url && SUPABASE_CONFIG.anonKey)
+    ? createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey)
+    : { from: () => ({ select: async () => ({ data: [], error: { message: 'Supabase disabled' } }) }) };
 
 // Order tracking functions
 class OrderTracker {

@@ -12,14 +12,29 @@
     <link rel="shortcut icon" href="favicon.ico?v=2">
     <!-- Paco Platform Fee Wallet: Configured via environment variable -->
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="single-page.css">
     <style>
         .admin-container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 2rem auto;
             padding: 2rem;
-            background: var(--surface-dark);
-            border-radius: var(--border-radius-lg);
-            box-shadow: var(--shadow-glow);
+            background: var(--glass-bg-dark);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            backdrop-filter: blur(18px);
+            box-shadow: var(--glass-shadow);
+            position: relative;
+        }
+
+        .admin-hero {
+            display: flex;
+            justify-content: center;
+            margin: 1rem 0 2rem 0;
+        }
+        .admin-hero img {
+            height: 56px;
+            width: auto;
+            filter: drop-shadow(0 2px 8px rgba(135, 206, 235, 0.35));
         }
         
         .deploy-form {
@@ -65,11 +80,11 @@
         }
         
         .deploy-btn {
-            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-            color: white;
+            background: linear-gradient(135deg, var(--mojo-ice), var(--mojo-blue));
+            color: var(--mojo-dark);
             border: none;
             padding: 1rem 2rem;
-            border-radius: var(--border-radius-lg);
+            border-radius: 12px;
             font-weight: 700;
             font-size: 1.1rem;
             cursor: pointer;
@@ -79,7 +94,7 @@
         
         .deploy-btn:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+            box-shadow: 0 8px 25px rgba(135, 206, 235, 0.45);
         }
         
         .deploy-btn:disabled {
@@ -90,9 +105,9 @@
         .status-section {
             margin-top: 2rem;
             padding: 1rem;
-            background: var(--surface-darker);
+            background: var(--glass-bg-dark);
             border-radius: var(--border-radius-md);
-            border-left: 4px solid var(--restaurant-green);
+            border: 1px solid var(--glass-border);
         }
         
         .deployed-contracts {
@@ -100,11 +115,11 @@
         }
         
         .contract-card {
-            background: var(--surface-darker);
+            background: var(--glass-bg-dark);
             padding: 1rem;
             border-radius: var(--border-radius-md);
             margin-bottom: 1rem;
-            border: 1px solid var(--surface-accent);
+            border: 1px solid var(--glass-border);
         }
         
         .contract-address {
@@ -117,8 +132,8 @@
         }
         
         .copy-btn {
-            background: var(--restaurant-green);
-            color: white;
+            background: var(--mojo-ice);
+            color: var(--mojo-dark);
             border: none;
             padding: 0.25rem 0.5rem;
             border-radius: var(--border-radius-sm);
@@ -148,8 +163,8 @@
         }
         
         .btn-warning {
-            background: var(--restaurant-orange);
-            color: white;
+            background: linear-gradient(135deg, #ffd166, #fcbf49);
+            color: #1a1a1a;
             border: none;
             padding: 0.75rem 1.5rem;
             border-radius: var(--border-radius-md);
@@ -159,12 +174,12 @@
         }
         
         .btn-warning:hover {
-            background: #e67e22;
+            background: #ffca7a;
             transform: translateY(-1px);
         }
         
         .btn-danger {
-            background: var(--restaurant-red);
+            background: linear-gradient(135deg, #ff6b6b, #e63946);
             color: white;
             border: none;
             padding: 0.75rem 1.5rem;
@@ -194,7 +209,10 @@
         }
     </style>
 </head>
-<body>
+<body style="background: url('BG.png') center/cover no-repeat fixed; color: var(--mojo-white);">
+    <div class="admin-hero">
+        <img src="TITLE.png" alt="MOJO Admin" />
+    </div>
     <div id="adminGate" style="max-width: 480px; margin: 4rem auto; background: var(--surface-dark); border: 1px solid var(--surface-accent); border-radius: var(--border-radius-lg); padding: 1.5rem; text-align: center;">
         <h2 style="margin-bottom: 1rem;">Admin Access</h2>
         <p style="margin-bottom: 1rem; color: var(--text-muted);">Enter passcode to continue</p>
@@ -208,11 +226,11 @@
         <h1>🎨 MOJO NFT Collection Setup</h1>
         <p>Deploy your MOJO NFT smart contract - <strong>One-time setup required</strong></p>
         
-        <div class="info-box" style="background: var(--surface-darker); padding: 1rem; border-radius: var(--border-radius-md); margin-bottom: 2rem; border-left: 4px solid var(--restaurant-yellow);">
+        <div class="info-box" style="background: var(--glass-bg-dark); padding: 1rem; border-radius: var(--border-radius-md); margin-bottom: 2rem; border-left: 4px solid var(--restaurant-yellow); border: 1px solid var(--glass-border);">
             <h3>📋 Before You Start:</h3>
             <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
                 <li>You only need to do this <strong>ONCE</strong> for your collection</li>
-                <li>Make sure you have ETH in your wallet for gas fees (~$50-200)</li>
+                <li><strong>Gas fees on Abstract:</strong> typically just a few cents per transaction thanks to L2 batching and efficient proofs.</li>
                 <li>Choose your collection details carefully (name/symbol can't be changed)</li>
                 <li>After deployment, copy the contract address to your main app</li>
             </ul>
@@ -256,12 +274,7 @@
             <div class="form-group">
                 <label for="network">Network</label>
                 <select id="network" required>
-                    <option value="">Select Network</option>
-                    <option value="ethereum">Ethereum Mainnet</option>
-                    <option value="polygon">Polygon</option>
-                    <option value="goerli">Goerli Testnet</option>
-                    <option value="mumbai">Mumbai Testnet</option>
-                    <option value="abstract">Abstract</option>
+                    <option value="abstract" selected>Abstract</option>
                 </select>
             </div>
             
@@ -497,7 +510,7 @@
             const msg = document.getElementById('adminPassMsg');
 
             // Configure passcode here (client-side). For real security, use HTTP Basic Auth or server middleware.
-            const PASS = window.ADMIN_PASS || 'mojo';
+            const PASS = window.ADMIN_PASS || 'mojo420!';
 
             function unlock() {
                 const val = (input.value || '').trim();
