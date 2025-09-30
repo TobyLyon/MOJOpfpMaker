@@ -1,0 +1,19 @@
+# Environment Variables for Contract Deployment
+# Copy this file to .env and fill in your actual values
+
+# Private key for deployment (without 0x prefix)
+PRIVATE_KEY=your_private_key_here
+
+# Abstract Network RPC URLs
+ABSTRACT_RPC_URL=https://api.abs.xyz
+ABSTRACT_TESTNET_RPC_URL=https://api.testnet.abs.xyz
+
+# Other networks (optional)
+MAINNET_RPC_URL=
+GOERLI_RPC_URL=
+
+# Block explorer API keys (optional)
+ETHERSCAN_API_KEY=
+
+# Gas reporting (optional)
+REPORT_GAS=false

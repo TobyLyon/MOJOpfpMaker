@@ -8,6 +8,8 @@
     "deploy:localhost": "npx hardhat run scripts/deploy.js --network localhost",
     "deploy:goerli": "npx hardhat run scripts/deploy.js --network goerli",
     "deploy:mainnet": "npx hardhat run scripts/deploy.js --network mainnet",
+    "deploy:abstract": "npx hardhat run scripts/deploy.js --network abstract",
+    "deploy:abstract-testnet": "npx hardhat run scripts/deploy.js --network abstractTestnet",
     "verify": "npx hardhat verify --network"
   },
   "devDependencies": {
@@ -16,6 +18,7 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.9.3",
+    "dotenv": "^17.2.3",
     "erc721a": "^4.2.3"
   }
 }

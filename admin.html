@@ -514,6 +514,159 @@
                 
                 <div id="priceStatus" style="margin-top: 1rem; display: none;"></div>
             </div>
+
+            <!-- Royalty Management -->
+            <div class="admin-section" style="background: var(--surface-darker); padding: 1.5rem; border-radius: var(--border-radius-md); margin-bottom: 2rem; border-left: 4px solid var(--restaurant-orange);">
+                <h3>👑 Royalty Management</h3>
+                <p>Configure royalties for secondary sales on OpenSea and other marketplaces</p>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="currentRoyaltyReceiver">Current Royalty Receiver</label>
+                        <input type="text" id="currentRoyaltyReceiver" readonly style="background: var(--surface-accent);">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="currentRoyaltyPercentage">Current Royalty %</label>
+                        <input type="text" id="currentRoyaltyPercentage" readonly style="background: var(--surface-accent);">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="newRoyaltyReceiver">New Royalty Receiver Address</label>
+                        <input type="text" id="newRoyaltyReceiver" placeholder="0x..." style="width: 100%;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="newRoyaltyPercentage">New Royalty Percentage</label>
+                        <input type="number" id="newRoyaltyPercentage" placeholder="7.5" step="0.1" min="0" max="10">
+                        <small style="color: var(--text-muted); margin-top: 0.5rem; display: block;">Maximum 10% allowed</small>
+                    </div>
+                </div>
+                
+                <div class="form-row" style="margin-top: 1rem;">
+                    <button class="btn btn-secondary" onclick="loadRoyaltyInfo()" style="margin-right: 1rem;">
+                        👑 Load Current Royalties
+                    </button>
+                    <button class="btn btn-primary" onclick="updateRoyaltyInfo()">
+                        💾 Update Royalties
+                    </button>
+                </div>
+                
+                <div id="royaltyStatus" style="margin-top: 1rem; display: none;"></div>
+            </div>
+
+            <!-- Escrow Management -->
+            <div class="admin-section" style="background: var(--surface-darker); padding: 1.5rem; border-radius: var(--border-radius-md); margin-bottom: 2rem; border-left: 4px solid var(--mojo-ice);">
+                <h3>🔒 Escrow Management</h3>
+                <p>Manage NFTs held in escrow - only you can release them to users</p>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="totalPendingTokens">Total Pending NFTs</label>
+                        <input type="text" id="totalPendingTokens" readonly style="background: var(--surface-accent);">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="totalClaimedTokens">Total Released NFTs</label>
+                        <input type="text" id="totalClaimedTokens" readonly style="background: var(--surface-accent);">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="userAddressLookup">User Address (to check pending NFTs)</label>
+                    <input type="text" id="userAddressLookup" placeholder="0x..." style="width: 100%;">
+                </div>
+                
+                <div class="form-row" style="margin-top: 1rem;">
+                    <button class="btn btn-secondary" onclick="loadEscrowStats()" style="margin-right: 1rem;">
+                        📊 Refresh Escrow Stats
+                    </button>
+                    <button class="btn btn-info" onclick="checkUserPendingTokens()" style="margin-right: 1rem;">
+                        🔍 Check User Tokens
+                    </button>
+                    <button class="btn btn-warning" onclick="showAllPendingTokens()" style="margin-right: 1rem;">
+                        📋 Show All Pending
+                    </button>
+                </div>
+                
+                <div class="form-group" style="margin-top: 1.5rem;">
+                    <label for="tokenIdToRelease">Token ID to Release</label>
+                    <input type="number" id="tokenIdToRelease" placeholder="1" min="1">
+                </div>
+                
+                <div class="form-group">
+                    <label for="userAddressToRelease">Release All Tokens for User</label>
+                    <input type="text" id="userAddressToRelease" placeholder="0x..." style="width: 100%;">
+                </div>
+                
+                <div class="form-row" style="margin-top: 1rem;">
+                    <button class="btn btn-success" onclick="releaseSingleToken()" style="margin-right: 1rem;">
+                        🚀 Release Single NFT
+                    </button>
+                    <button class="btn btn-success" onclick="releaseAllUserTokens()" style="margin-right: 1rem;">
+                        🎁 Release All User NFTs
+                    </button>
+                    <button class="btn btn-danger" onclick="releaseAllPendingTokens()">
+                        ⚡ Release ALL Pending NFTs
+                    </button>
+                </div>
+                
+                <div id="escrowStatus" style="margin-top: 1rem; display: none;"></div>
+                
+                <!-- Pending Tokens Display -->
+                <div id="pendingTokensList" style="margin-top: 2rem; display: none;">
+                    <h4>📋 Pending NFTs in Escrow</h4>
+                    <div id="pendingTokensContent" style="max-height: 300px; overflow-y: auto; background: var(--surface-accent); padding: 1rem; border-radius: var(--border-radius-sm);"></div>
+                </div>
+            </div>
+
+            <!-- Collection Management -->
+            <div class="admin-section" style="background: var(--surface-darker); padding: 1.5rem; border-radius: var(--border-radius-md); margin-bottom: 2rem; border-left: 4px solid var(--restaurant-green);">
+                <h3>🎨 Collection Management</h3>
+                <p>Manage collection metadata and uniqueness settings</p>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="collectionTotalSupply">Total Minted</label>
+                        <input type="text" id="collectionTotalSupply" readonly style="background: var(--surface-accent);">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="collectionMaxSupply">Max Supply</label>
+                        <input type="text" id="collectionMaxSupply" readonly style="background: var(--surface-accent);">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="collectionDescription">Collection Description</label>
+                    <textarea id="collectionDescription" rows="3" style="width: 100%;" placeholder="Update collection description..."></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="collectionExternalUrl">External URL</label>
+                        <input type="url" id="collectionExternalUrl" placeholder="https://mojotheyeti.com/" style="width: 100%;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="collectionImageUrl">Collection Image URL</label>
+                        <input type="url" id="collectionImageUrl" placeholder="https://..." style="width: 100%;">
+                    </div>
+                </div>
+                
+                <div class="form-row" style="margin-top: 1rem;">
+                    <button class="btn btn-secondary" onclick="loadCollectionStats()" style="margin-right: 1rem;">
+                        📊 Load Collection Info
+                    </button>
+                    <button class="btn btn-primary" onclick="updateCollectionMetadata()">
+                        💾 Update Collection
+                    </button>
+                </div>
+                
+                <div id="collectionStatus" style="margin-top: 1rem; display: none;"></div>
+            </div>
         </div>
     </div>
 
@@ -1057,6 +1210,328 @@ contract MojoNFT_Template is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard 
         
         function showMintingStatus(message, type) {
             const statusDiv = document.getElementById('mintingStatus');
+            statusDiv.style.display = 'block';
+            statusDiv.textContent = message;
+            statusDiv.style.color = type === 'success' ? 'var(--restaurant-green)' : 
+                                   type === 'error' ? 'var(--restaurant-red)' : 
+                                   type === 'warning' ? 'var(--restaurant-orange)' : 'var(--restaurant-yellow)';
+        }
+
+        // Load current royalty information
+        async function loadRoyaltyInfo() {
+            if (!await initializeAdminContract()) return;
+            
+            try {
+                const royaltyReceiver = await adminContract.royaltyReceiver();
+                const royaltyFeeNumerator = await adminContract.royaltyFeeNumerator();
+                const royaltyPercentage = (royaltyFeeNumerator / 100).toFixed(1); // Convert basis points to percentage
+                
+                document.getElementById('currentRoyaltyReceiver').value = royaltyReceiver;
+                document.getElementById('currentRoyaltyPercentage').value = royaltyPercentage + '%';
+                showRoyaltyStatus('✅ Current royalty information loaded', 'success');
+            } catch (error) {
+                showRoyaltyStatus(`❌ Error loading royalty info: ${error.message}`, 'error');
+            }
+        }
+        
+        // Update royalty information
+        async function updateRoyaltyInfo() {
+            if (!await initializeAdminContract()) return;
+            
+            const newReceiver = document.getElementById('newRoyaltyReceiver').value.trim();
+            const newPercentage = parseFloat(document.getElementById('newRoyaltyPercentage').value);
+            
+            if (!newReceiver || !ethers.utils.isAddress(newReceiver)) {
+                showRoyaltyStatus('❌ Please enter a valid receiver address', 'error');
+                return;
+            }
+            
+            if (isNaN(newPercentage) || newPercentage < 0 || newPercentage > 10) {
+                showRoyaltyStatus('❌ Please enter a valid percentage (0-10%)', 'error');
+                return;
+            }
+            
+            try {
+                showRoyaltyStatus('🔄 Updating royalty information...', 'info');
+                
+                const feeNumerator = Math.floor(newPercentage * 100); // Convert percentage to basis points
+                const tx = await adminContract.setRoyaltyInfo(newReceiver, feeNumerator);
+                await tx.wait();
+                
+                showRoyaltyStatus(`✅ Royalty updated: ${newPercentage}% to ${newReceiver}`, 'success');
+                loadRoyaltyInfo(); // Refresh the display
+            } catch (error) {
+                showRoyaltyStatus(`❌ Failed to update royalty: ${error.message}`, 'error');
+            }
+        }
+        
+        function showRoyaltyStatus(message, type) {
+            const statusDiv = document.getElementById('royaltyStatus');
+            statusDiv.style.display = 'block';
+            statusDiv.textContent = message;
+            statusDiv.style.color = type === 'success' ? 'var(--restaurant-green)' : 
+                                   type === 'error' ? 'var(--restaurant-red)' : 
+                                   type === 'warning' ? 'var(--restaurant-orange)' : 'var(--restaurant-yellow)';
+        }
+
+        // ========== ESCROW MANAGEMENT FUNCTIONS ==========
+
+        // Load escrow statistics
+        async function loadEscrowStats() {
+            if (!await initializeAdminContract()) return;
+            
+            try {
+                const stats = await adminContract.getCollectionStats();
+                const totalMinted = stats.totalMinted.toString();
+                const totalClaimed = stats.totalClaimed.toString();
+                const totalPending = stats.totalPending.toString();
+                
+                document.getElementById('totalPendingTokens').value = totalPending;
+                document.getElementById('totalClaimedTokens').value = totalClaimed;
+                
+                showEscrowStatus(`✅ Stats loaded: ${totalPending} pending, ${totalClaimed} released`, 'success');
+            } catch (error) {
+                showEscrowStatus(`❌ Error loading escrow stats: ${error.message}`, 'error');
+            }
+        }
+
+        // Check pending tokens for a specific user
+        async function checkUserPendingTokens() {
+            if (!await initializeAdminContract()) return;
+            
+            const userAddress = document.getElementById('userAddressLookup').value.trim();
+            
+            if (!userAddress || !ethers.utils.isAddress(userAddress)) {
+                showEscrowStatus('❌ Please enter a valid user address', 'error');
+                return;
+            }
+            
+            try {
+                const pendingTokens = await adminContract.getUserPendingTokens(userAddress);
+                const tokenIds = pendingTokens.map(id => id.toString());
+                
+                if (tokenIds.length === 0) {
+                    showEscrowStatus(`✅ No pending tokens for ${userAddress}`, 'success');
+                } else {
+                    showEscrowStatus(`✅ User has ${tokenIds.length} pending tokens: ${tokenIds.join(', ')}`, 'success');
+                }
+            } catch (error) {
+                showEscrowStatus(`❌ Error checking user tokens: ${error.message}`, 'error');
+            }
+        }
+
+        // Show all pending tokens
+        async function showAllPendingTokens() {
+            if (!await initializeAdminContract()) return;
+            
+            try {
+                showEscrowStatus('🔄 Loading all pending tokens...', 'info');
+                
+                const allPendingTokens = await adminContract.getAllPendingTokens();
+                const tokenIds = allPendingTokens.map(id => id.toString());
+                
+                const pendingList = document.getElementById('pendingTokensList');
+                const pendingContent = document.getElementById('pendingTokensContent');
+                
+                if (tokenIds.length === 0) {
+                    pendingContent.innerHTML = '<p>No pending tokens in escrow.</p>';
+                } else {
+                    let html = '<table style="width: 100%; border-collapse: collapse;">';
+                    html += '<tr><th style="border: 1px solid #ccc; padding: 8px;">Token ID</th><th style="border: 1px solid #ccc; padding: 8px;">Intended Recipient</th><th style="border: 1px solid #ccc; padding: 8px;">Actions</th></tr>';
+                    
+                    for (const tokenId of tokenIds) {
+                        try {
+                            const recipient = await adminContract.pendingClaims(tokenId);
+                            html += `<tr>
+                                <td style="border: 1px solid #ccc; padding: 8px;">#${tokenId}</td>
+                                <td style="border: 1px solid #ccc; padding: 8px; font-family: monospace; font-size: 0.8em;">${recipient}</td>
+                                <td style="border: 1px solid #ccc; padding: 8px;">
+                                    <button onclick="releaseSingleTokenById('${tokenId}')" style="background: var(--restaurant-green); color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">Release</button>
+                                </td>
+                            </tr>`;
+                        } catch (error) {
+                            console.warn(`Could not get recipient for token ${tokenId}:`, error);
+                        }
+                    }
+                    
+                    html += '</table>';
+                    pendingContent.innerHTML = html;
+                }
+                
+                pendingList.style.display = 'block';
+                showEscrowStatus(`✅ Found ${tokenIds.length} pending tokens`, 'success');
+                
+            } catch (error) {
+                showEscrowStatus(`❌ Error loading pending tokens: ${error.message}`, 'error');
+            }
+        }
+
+        // Release a single token
+        async function releaseSingleToken() {
+            const tokenId = document.getElementById('tokenIdToRelease').value;
+            if (!tokenId) {
+                showEscrowStatus('❌ Please enter a token ID', 'error');
+                return;
+            }
+            await releaseSingleTokenById(tokenId);
+        }
+
+        // Release a single token by ID (helper function)
+        async function releaseSingleTokenById(tokenId) {
+            if (!await initializeAdminContract()) return;
+            
+            try {
+                showEscrowStatus(`🔄 Releasing token #${tokenId}...`, 'info');
+                
+                const tx = await adminContract.claimToken(tokenId);
+                await tx.wait();
+                
+                showEscrowStatus(`✅ Token #${tokenId} released successfully!`, 'success');
+                
+                // Refresh displays
+                loadEscrowStats();
+                showAllPendingTokens();
+                
+            } catch (error) {
+                showEscrowStatus(`❌ Failed to release token #${tokenId}: ${error.message}`, 'error');
+            }
+        }
+
+        // Release all tokens for a specific user
+        async function releaseAllUserTokens() {
+            if (!await initializeAdminContract()) return;
+            
+            const userAddress = document.getElementById('userAddressToRelease').value.trim();
+            
+            if (!userAddress || !ethers.utils.isAddress(userAddress)) {
+                showEscrowStatus('❌ Please enter a valid user address', 'error');
+                return;
+            }
+            
+            try {
+                showEscrowStatus(`🔄 Releasing all tokens for ${userAddress}...`, 'info');
+                
+                const tx = await adminContract.claimAllUserTokens(userAddress);
+                await tx.wait();
+                
+                showEscrowStatus(`✅ All tokens released for ${userAddress}!`, 'success');
+                
+                // Refresh displays
+                loadEscrowStats();
+                showAllPendingTokens();
+                
+            } catch (error) {
+                showEscrowStatus(`❌ Failed to release user tokens: ${error.message}`, 'error');
+            }
+        }
+
+        // Release ALL pending tokens (emergency function)
+        async function releaseAllPendingTokens() {
+            if (!await initializeAdminContract()) return;
+            
+            if (!confirm('⚠️ Are you sure you want to release ALL pending tokens? This cannot be undone!')) {
+                return;
+            }
+            
+            try {
+                showEscrowStatus('🔄 Loading all pending tokens for batch release...', 'info');
+                
+                const allPendingTokens = await adminContract.getAllPendingTokens();
+                const tokenIds = allPendingTokens.map(id => id.toString());
+                
+                if (tokenIds.length === 0) {
+                    showEscrowStatus('✅ No pending tokens to release', 'success');
+                    return;
+                }
+                
+                showEscrowStatus(`🔄 Releasing ${tokenIds.length} tokens in batches...`, 'info');
+                
+                // Release in batches of 20 to avoid gas limits
+                const batchSize = 20;
+                for (let i = 0; i < tokenIds.length; i += batchSize) {
+                    const batch = tokenIds.slice(i, i + batchSize);
+                    const batchNumber = Math.floor(i / batchSize) + 1;
+                    const totalBatches = Math.ceil(tokenIds.length / batchSize);
+                    
+                    showEscrowStatus(`🔄 Processing batch ${batchNumber}/${totalBatches} (${batch.length} tokens)...`, 'info');
+                    
+                    const tx = await adminContract.claimTokensBatch(batch);
+                    await tx.wait();
+                    
+                    console.log(`✅ Batch ${batchNumber} completed:`, batch);
+                }
+                
+                showEscrowStatus(`✅ All ${tokenIds.length} tokens released successfully!`, 'success');
+                
+                // Refresh displays
+                loadEscrowStats();
+                showAllPendingTokens();
+                
+            } catch (error) {
+                showEscrowStatus(`❌ Failed to release all tokens: ${error.message}`, 'error');
+            }
+        }
+
+        // ========== COLLECTION MANAGEMENT FUNCTIONS ==========
+
+        // Load collection statistics
+        async function loadCollectionStats() {
+            if (!await initializeAdminContract()) return;
+            
+            try {
+                const stats = await adminContract.getCollectionStats();
+                const collectionInfo = await adminContract.collectionInfo();
+                
+                document.getElementById('collectionTotalSupply').value = stats.totalMinted.toString();
+                document.getElementById('collectionMaxSupply').value = stats.maxSupply.toString();
+                document.getElementById('collectionDescription').value = collectionInfo.description;
+                document.getElementById('collectionExternalUrl').value = collectionInfo.externalUrl;
+                document.getElementById('collectionImageUrl').value = collectionInfo.imageUrl;
+                
+                showCollectionStatus('✅ Collection info loaded successfully', 'success');
+            } catch (error) {
+                showCollectionStatus(`❌ Error loading collection info: ${error.message}`, 'error');
+            }
+        }
+
+        // Update collection metadata
+        async function updateCollectionMetadata() {
+            if (!await initializeAdminContract()) return;
+            
+            const description = document.getElementById('collectionDescription').value.trim();
+            const externalUrl = document.getElementById('collectionExternalUrl').value.trim();
+            const imageUrl = document.getElementById('collectionImageUrl').value.trim();
+            
+            if (!description) {
+                showCollectionStatus('❌ Please enter a collection description', 'error');
+                return;
+            }
+            
+            try {
+                showCollectionStatus('🔄 Updating collection metadata...', 'info');
+                
+                const tx = await adminContract.updateCollectionInfo(description, externalUrl, imageUrl);
+                await tx.wait();
+                
+                showCollectionStatus('✅ Collection metadata updated successfully!', 'success');
+                
+            } catch (error) {
+                showCollectionStatus(`❌ Failed to update collection metadata: ${error.message}`, 'error');
+            }
+        }
+
+        // Status display functions for new sections
+        function showEscrowStatus(message, type) {
+            const statusDiv = document.getElementById('escrowStatus');
+            statusDiv.style.display = 'block';
+            statusDiv.textContent = message;
+            statusDiv.style.color = type === 'success' ? 'var(--restaurant-green)' : 
+                                   type === 'error' ? 'var(--restaurant-red)' : 
+                                   type === 'warning' ? 'var(--restaurant-orange)' : 'var(--restaurant-yellow)';
+        }
+
+        function showCollectionStatus(message, type) {
+            const statusDiv = document.getElementById('collectionStatus');
             statusDiv.style.display = 'block';
             statusDiv.textContent = message;
             statusDiv.style.color = type === 'success' ? 'var(--restaurant-green)' : 

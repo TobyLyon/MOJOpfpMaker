@@ -8,24 +8,26 @@ async function main() {
   console.log("Deploying with account:", deployer.address);
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
-  // Canonical contract parameters for MojoNFT_Template
+  // Contract parameters for Abstract deployment
   const CONTRACT_NAME = "MOJO PFP Collection";
   const CONTRACT_SYMBOL = "MOJO";
-  const INITIAL_MINT_PRICE = hre.ethers.utils.parseEther("0.01");
+  const INITIAL_MINT_PRICE = hre.ethers.utils.parseEther("0.00095"); // 95% of 0.001 ETH (after 5% platform fee)
   const MAX_SUPPLY = 10000;
   const ROYALTY_RECEIVER = deployer.address; // Update as needed
   const ROYALTY_BPS = 750; // 7.5%
 
-  console.log("Deploying MojoNFT_Template (canonical contract)...");
+  console.log("Deploying MojoNFT_Escrow (enhanced contract with escrow system)...");
 
-  const MojoNFTTemplate = await hre.ethers.getContractFactory("MojoNFT_Template");
-  const mojoNFT = await MojoNFTTemplate.deploy(
+  const MojoNFTEscrow = await hre.ethers.getContractFactory("MojoNFT_Escrow");
+  const mojoNFT = await MojoNFTEscrow.deploy(
     CONTRACT_NAME,
     CONTRACT_SYMBOL,
+    "A unique MOJO PFP collection with custom traits on Abstract blockchain",
     INITIAL_MINT_PRICE,
     MAX_SUPPLY,
     ROYALTY_RECEIVER,
-    ROYALTY_BPS
+    ROYALTY_BPS,
+    "https://ipfs.io/ipfs/" // Base token URI
   );
 
   await mojoNFT.deployed();

@@ -30,11 +30,17 @@ module.exports = {
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
       chainId: 1
     },
-    // Abstract Testnet (if available)
+    // Abstract Mainnet
     abstract: {
-      url: process.env.ABSTRACT_RPC_URL || "https://api.testnet.abs.xyz",
+      url: process.env.ABSTRACT_RPC_URL || "https://api.abs.xyz",
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-      chainId: 11124 // Abstract testnet chain ID (example)
+      chainId: 11124 // Abstract mainnet chain ID
+    },
+    // Abstract Testnet
+    abstractTestnet: {
+      url: process.env.ABSTRACT_TESTNET_RPC_URL || "https://api.testnet.abs.xyz", 
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      chainId: 11124 // Abstract testnet chain ID
     }
   },
   etherscan: {

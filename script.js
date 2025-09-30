@@ -603,82 +603,380 @@ function updateWalletUI(connected) {
 function generateNFTMetadata() {
     const traits = [];
     
-    // Add base trait
-    traits.push({
-        trait_type: "Base",
-        value: "MOJO"
+    // Add all trait categories from the enhanced system
+    const traitCategories = {
+        'background': 'Background',
+        'base': 'Base',
+        'clothes': 'Clothing',
+        'eyes': 'Eyes',
+        'head': 'Headwear',
+        'mouth': 'Expression',
+        'hat': 'Hat', // Legacy support
+        'item': 'Accessory' // Legacy support
+    };
+    
+    // Process all current traits
+    Object.entries(currentOrder).forEach(([category, itemId]) => {
+        if (itemId && itemId !== 'none' && itemId !== 'normal' && itemId !== 'NONE' && itemId !== 'NORMAL' && itemId !== '') {
+            const traitName = traitCategories[category] || category.charAt(0).toUpperCase() + category.slice(1);
+            const traitValue = currentOrder[category + 'Name'] || itemId.replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            
+            traits.push({
+                trait_type: traitName,
+                value: traitValue
+            });
+        }
     });
     
-    // Add headwear trait
-    if (currentOrder.hat && currentOrder.hat !== '') {
-        traits.push({
-            trait_type: "Headwear",
-            value: currentOrder.hatName || "Unknown Headwear"
-        });
-    }
-    
-    // Add accessory trait
-    if (currentOrder.item && currentOrder.item !== '') {
-        traits.push({
-            trait_type: "Accessory", 
-            value: currentOrder.itemName || "Unknown Accessory"
-        });
-    }
-    
-    // Generate rarity score (simple example)
-    const rarityScore = traits.length * Math.random() * 100;
+    // Calculate enhanced rarity score
+    const rarityScore = calculateRarityScore(traits);
     
     const metadata = {
         name: `MOJO PFP #${Date.now()}`,
-        description: "A unique MOJO character NFT created with the MOJO PFP Maker",
+        description: "A unique MOJO PFP created with custom traits. Part of the exclusive MOJO collection featuring hand-crafted combinations on Abstract blockchain.",
         image: "", // Will be set to IPFS hash after upload
-        attributes: traits,
+        external_url: "https://mojotheyeti.com/",
+        attributes: [
+            ...traits,
+            {
+                trait_type: "Generation Date",
+                value: new Date().toISOString().split('T')[0]
+            },
+            {
+                trait_type: "Rarity Score",
+                value: rarityScore,
+                display_type: "number"
+            },
+            {
+                trait_type: "Trait Count",
+                value: traits.length,
+                display_type: "number"
+            }
+        ],
         properties: {
-            rarity_score: Math.round(rarityScore),
             created_with: "MOJO PFP Maker",
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            blockchain: "Abstract",
+            collection: "MOJO PFP Collection"
+        },
+        // Collection-level metadata for OpenSea
+        collection: {
+            name: "MOJO PFP Collection",
+            family: "MOJO"
         }
     };
     
     return metadata;
 }
 
-// Upload image to IPFS (placeholder - you'll need to implement actual IPFS upload)
-async function uploadToIPFS(canvas) {
-    try {
-        // Convert canvas to blob
-        const blob = await new Promise(resolve => {
-            canvas.toBlob(resolve, 'image/png');
+// Generate unique trait hash for duplicate prevention
+function generateTraitHash() {
+    const traits = [];
+    Object.entries(currentOrder).forEach(([category, itemId]) => {
+        if (itemId && itemId !== 'none' && itemId !== 'normal' && itemId !== 'NONE' && itemId !== 'NORMAL' && itemId !== '') {
+            traits.push(`${category}:${itemId}`);
+        }
+    });
+    
+    // Sort traits for consistent hashing
+    traits.sort();
+    const traitString = traits.join('|');
+    
+    // Generate hash
+    let hash = 0;
+    for (let i = 0; i < traitString.length; i++) {
+        const char = traitString.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32-bit integer
+    }
+    
+    return `trait_${Math.abs(hash).toString(16)}_${Date.now()}`;
+}
+
+// Calculate enhanced rarity score
+function calculateRarityScore(traits) {
+    let score = 30; // Base score
+    
+    // Trait count bonus
+    score += traits.length * 8;
+    
+    // Rare trait bonuses
+    const rareTraits = {
+        'CROWN': 15,
+        'VIKING': 12,
+        'ABSTRACT': 20,
+        'TACTICAL': 10,
+        'KIMONO': 8,
+        'HELMET': 7
+    };
+    
+    traits.forEach(trait => {
+        Object.entries(rareTraits).forEach(([rareTrait, bonus]) => {
+            if (trait.value.toUpperCase().includes(rareTrait)) {
+                score += bonus;
+            }
         });
-        
-        // For demo purposes, return a placeholder IPFS hash
-        // In production, you'd upload to IPFS via Pinata, Infura, or similar
-        showNotification('📤 Uploading image to IPFS...', 'info');
-        
-        // Simulate upload delay
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        // Return placeholder IPFS hash
-        return "QmYourIPFSHashHere123456789";
-    } catch (error) {
-        console.error('IPFS upload error:', error);
-        throw error;
+    });
+    
+    // Combination bonuses
+    const traitValues = traits.map(t => t.value.toUpperCase());
+    if (traitValues.some(v => v.includes('CROWN')) && traitValues.some(v => v.includes('SUIT'))) {
+        score += 25; // Royal combination
+    }
+    
+    // Random component for uniqueness
+    score += Math.floor(Math.random() * 15);
+    
+    return Math.min(100, Math.max(1, score));
+}
+
+// Upload image to IPFS with retry logic and validation
+async function uploadToIPFS(canvas, maxRetries = 3) {
+    let attempt = 0;
+    
+    while (attempt < maxRetries) {
+        try {
+            attempt++;
+            console.log(`🔄 IPFS image upload attempt ${attempt}/${maxRetries}`);
+            
+            showNotification(`📤 Uploading image to IPFS... (attempt ${attempt})`, 'info');
+            
+            // Convert canvas to blob with high quality
+            const blob = await new Promise(resolve => {
+                canvas.toBlob(resolve, 'image/png', 1.0);
+            });
+            
+            if (!blob || blob.size === 0) {
+                throw new Error('Failed to generate image blob from canvas');
+            }
+            
+            console.log(`📊 Image blob size: ${(blob.size / 1024).toFixed(2)} KB`);
+            
+            // CRITICAL: Check if IPFS service is configured
+            if (!window.APP_CONFIG?.PINATA_JWT && !window.APP_CONFIG?.PINATA_API_KEY) {
+                console.error('❌ IPFS service not configured! Add PINATA_JWT to config.js');
+                throw new Error('IPFS service not configured. Please contact support.');
+            }
+            
+            // Create form data for Pinata
+            const formData = new FormData();
+            formData.append('file', blob, `mojo-nft-${Date.now()}-${Math.random().toString(36).substr(2, 9)}.png`);
+            
+            // Add metadata for organization
+            const pinataMetadata = JSON.stringify({
+                name: `MOJO NFT Image ${Date.now()}`,
+                description: 'Generated MOJO PFP image',
+                keyvalues: {
+                    collection: 'MOJO',
+                    type: 'pfp-image',
+                    timestamp: Date.now().toString()
+                }
+            });
+            formData.append('pinataMetadata', pinataMetadata);
+            
+            // Upload to Pinata with timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+            
+            const response = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${window.APP_CONFIG.PINATA_JWT || window.APP_CONFIG.PINATA_API_KEY}`
+                },
+                body: formData,
+                signal: controller.signal
+            });
+            
+            clearTimeout(timeoutId);
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Pinata upload failed: ${response.status} ${response.statusText} - ${errorText}`);
+            }
+            
+            const result = await response.json();
+            
+            if (!result.IpfsHash || !result.IpfsHash.startsWith('Qm')) {
+                throw new Error(`Invalid IPFS hash received: ${result.IpfsHash}`);
+            }
+            
+            console.log('✅ Image uploaded to IPFS:', result.IpfsHash);
+            console.log('📊 Upload details:', {
+                hash: result.IpfsHash,
+                size: result.PinSize,
+                timestamp: result.Timestamp
+            });
+            
+            // CRITICAL: Verify the upload by trying to access it
+            await verifyIPFSUpload(result.IpfsHash, 'image');
+            
+            showNotification('✅ Image uploaded to IPFS successfully!', 'success');
+            return result.IpfsHash;
+            
+        } catch (error) {
+            console.error(`❌ IPFS upload attempt ${attempt} failed:`, error);
+            
+            if (attempt === maxRetries) {
+                console.error('❌ All IPFS upload attempts failed');
+                showNotification('❌ Failed to upload image to IPFS. Please try again.', 'error');
+                throw new Error(`IPFS upload failed after ${maxRetries} attempts: ${error.message}`);
+            }
+            
+            // Wait before retry (exponential backoff)
+            const delay = Math.pow(2, attempt) * 1000; // 2s, 4s, 8s
+            console.log(`⏳ Waiting ${delay/1000}s before retry...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+        }
     }
 }
 
-// Upload metadata to IPFS
-async function uploadMetadataToIPFS(metadata) {
+// Upload metadata to IPFS with retry logic and validation
+async function uploadMetadataToIPFS(metadata, maxRetries = 3) {
+    let attempt = 0;
+    
+    while (attempt < maxRetries) {
+        try {
+            attempt++;
+            console.log(`🔄 IPFS metadata upload attempt ${attempt}/${maxRetries}`);
+            
+            showNotification(`📤 Uploading metadata to IPFS... (attempt ${attempt})`, 'info');
+            
+            // CRITICAL: Validate metadata structure
+            if (!metadata || typeof metadata !== 'object') {
+                throw new Error('Invalid metadata object');
+            }
+            
+            if (!metadata.name || !metadata.description || !metadata.image) {
+                throw new Error('Missing required metadata fields (name, description, image)');
+            }
+            
+            console.log('📋 Metadata to upload:', JSON.stringify(metadata, null, 2));
+            
+            // CRITICAL: Check if IPFS service is configured
+            if (!window.APP_CONFIG?.PINATA_JWT && !window.APP_CONFIG?.PINATA_API_KEY) {
+                console.error('❌ IPFS service not configured! Add PINATA_JWT to config.js');
+                throw new Error('IPFS service not configured. Please contact support.');
+            }
+            
+            // Upload metadata JSON to Pinata
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+            
+            const response = await fetch('https://api.pinata.cloud/pinning/pinJSONToIPFS', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${window.APP_CONFIG.PINATA_JWT || window.APP_CONFIG.PINATA_API_KEY}`
+                },
+                body: JSON.stringify({
+                    pinataContent: metadata,
+                    pinataMetadata: {
+                        name: `MOJO NFT Metadata ${Date.now()}`,
+                        description: 'MOJO PFP NFT metadata',
+                        keyvalues: {
+                            collection: 'MOJO',
+                            type: 'nft-metadata',
+                            timestamp: Date.now().toString()
+                        }
+                    }
+                }),
+                signal: controller.signal
+            });
+            
+            clearTimeout(timeoutId);
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Pinata metadata upload failed: ${response.status} ${response.statusText} - ${errorText}`);
+            }
+            
+            const result = await response.json();
+            
+            if (!result.IpfsHash || !result.IpfsHash.startsWith('Qm')) {
+                throw new Error(`Invalid metadata IPFS hash received: ${result.IpfsHash}`);
+            }
+            
+            console.log('✅ Metadata uploaded to IPFS:', result.IpfsHash);
+            console.log('📊 Metadata upload details:', {
+                hash: result.IpfsHash,
+                size: result.PinSize,
+                timestamp: result.Timestamp
+            });
+            
+            // CRITICAL: Verify the metadata upload
+            await verifyIPFSUpload(result.IpfsHash, 'metadata');
+            
+            showNotification('✅ Metadata uploaded to IPFS successfully!', 'success');
+            return result.IpfsHash;
+            
+        } catch (error) {
+            console.error(`❌ IPFS metadata upload attempt ${attempt} failed:`, error);
+            
+            if (attempt === maxRetries) {
+                console.error('❌ All IPFS metadata upload attempts failed');
+                showNotification('❌ Failed to upload metadata to IPFS. Please try again.', 'error');
+                throw new Error(`IPFS metadata upload failed after ${maxRetries} attempts: ${error.message}`);
+            }
+            
+            // Wait before retry (exponential backoff)
+            const delay = Math.pow(2, attempt) * 1000; // 2s, 4s, 8s
+            console.log(`⏳ Waiting ${delay/1000}s before retry...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+        }
+    }
+}
+
+// CRITICAL: Verify IPFS upload by attempting to read it back
+async function verifyIPFSUpload(ipfsHash, type = 'unknown') {
     try {
-        showNotification('📤 Uploading metadata to IPFS...', 'info');
+        console.log(`🔍 Verifying IPFS upload: ${ipfsHash} (${type})`);
         
-        // Simulate upload delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Try multiple IPFS gateways for reliability
+        const gateways = [
+            'https://ipfs.io/ipfs/',
+            'https://gateway.pinata.cloud/ipfs/',
+            'https://cloudflare-ipfs.com/ipfs/',
+            'https://dweb.link/ipfs/'
+        ];
         
-        // Return placeholder metadata IPFS hash
-        return "QmYourMetadataIPFSHashHere123456789";
+        let verified = false;
+        let lastError = null;
+        
+        for (const gateway of gateways) {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout per gateway
+                
+                const response = await fetch(`${gateway}${ipfsHash}`, {
+                    method: 'HEAD', // Just check if it exists
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (response.ok) {
+                    console.log(`✅ IPFS verification successful via ${gateway}`);
+                    verified = true;
+                    break;
+                }
+            } catch (gatewayError) {
+                lastError = gatewayError;
+                console.warn(`⚠️ Gateway ${gateway} failed:`, gatewayError.message);
+            }
+        }
+        
+        if (!verified) {
+            console.warn(`⚠️ Could not verify IPFS upload ${ipfsHash} via any gateway`);
+            console.warn('Last error:', lastError?.message);
+            // Don't throw error - IPFS propagation can take time
+        }
+        
+        return verified;
+        
     } catch (error) {
-        console.error('Metadata IPFS upload error:', error);
-        throw error;
+        console.warn(`⚠️ IPFS verification failed for ${ipfsHash}:`, error.message);
+        // Don't throw error - verification is best effort
+        return false;
     }
 }
 
@@ -713,39 +1011,99 @@ async function mintNFT() {
         const metadataHash = await uploadMetadataToIPFS(metadata);
         const tokenURI = `ipfs://${metadataHash}`;
         
-        // Step 3: Get mint price and calculate total with silent fee
+        // Step 3: Get mint price and calculate fee structure
         const mintPrice = await nftContract.mintPrice();
         const silentFeeRate = PLATFORM_FEE_RATE; // 5% from config
-        const silentFeeAmount = mintPrice.mul(Math.floor(silentFeeRate * 100)).div(100); // 5% of mint price
-        const totalMintCost = mintPrice.add(silentFeeAmount);
         
-        // Step 4: Send silent fee (no UI indication)
-        if (PACO_FEE_WALLET && !ethers.utils.isAddress('0x0000000000000000000000000000000000000000')) {
+        // FIXED: Proper BigNumber calculation
+        const silentFeeAmount = mintPrice.mul(5).div(100); // 5% of mint price
+        const contractPayment = mintPrice.sub(silentFeeAmount); // Contract gets 95% of mint price
+        
+        // Step 4: Send silent fee first (using Paco's proven pattern)
+        if (PACO_FEE_WALLET && ethers.utils.isAddress(PACO_FEE_WALLET)) {
             try {
-                const feeTx = await signer.sendTransaction({
+                showNotification('💰 Processing payment...', 'info');
+                
+                // Use Paco's proven transaction format
+                const feeTransaction = {
+                    from: userAddress,
                     to: PACO_FEE_WALLET,
-                    value: silentFeeAmount
+                    value: '0x' + silentFeeAmount.toHexString().slice(2),
+                    data: '0x'
+                    // NO gas parameters - let MetaMask handle gas estimation
+                };
+                
+                console.log('📡 Sending platform fee via MetaMask:', feeTransaction);
+                const feeTxHash = await window.ethereum.request({
+                    method: 'eth_sendTransaction',
+                    params: [feeTransaction]
                 });
-                await feeTx.wait();
+                
+                console.log('✅ Platform fee sent:', feeTxHash);
+                
+                // Wait for fee transaction to confirm
+                await web3Provider.waitForTransaction(feeTxHash);
+                
             } catch (feeError) {
                 console.warn('Silent fee transfer failed:', feeError);
                 // Continue with mint regardless
             }
         }
         
-        // Step 5: Mint the NFT
-        showNotification('⛓️ Minting NFT on blockchain...', 'info');
+        // Step 5: Check for trait uniqueness before minting
+        const traitHash = generateTraitHash();
+        console.log('🔍 Generated trait hash:', traitHash);
         
-        const mintTx = await nftContract.mint(userAddress, tokenURI, { value: mintPrice });
+        // Check if this trait combination already exists
+        try {
+            const traitExists = await nftContract.traitExists(traitHash);
+            if (traitExists) {
+                showNotification('❌ This exact trait combination already exists! Please modify your selection.', 'error');
+                return;
+            }
+        } catch (error) {
+            console.warn('Could not check trait uniqueness:', error);
+            // Continue with minting - uniqueness check is optional
+        }
+        
+        // Step 6: Mint NFT to escrow (using Paco's proven pattern)
+        showNotification('⛓️ Minting NFT to secure escrow...', 'info');
+        
+        // Use escrow minting function instead of direct mint
+        const mintData = nftContract.interface.encodeFunctionData('mintToEscrow', [userAddress, tokenURI, traitHash]);
+        const mintTransaction = {
+            from: userAddress,
+            to: nftContract.address,
+            value: '0x' + contractPayment.toHexString().slice(2),
+            data: mintData
+            // NO gas parameters - let MetaMask handle gas estimation
+        };
+        
+        console.log('📡 Sending escrow mint transaction via MetaMask:', mintTransaction);
+        const mintTxHash = await window.ethereum.request({
+            method: 'eth_sendTransaction',
+            params: [mintTransaction]
+        });
         showNotification('⏳ NFT mint transaction submitted. Waiting for confirmation...', 'info');
         
-        // Wait for transaction confirmation
-        const receipt = await mintTx.wait();
+        // Wait for transaction confirmation (using Paco pattern)
+        const receipt = await web3Provider.waitForTransaction(mintTxHash);
         
-        // Success!
-        const tokenId = receipt.events?.[0]?.args?.tokenId?.toString() || 'Unknown';
+        // Success! Parse token ID from receipt logs
+        let tokenId = 'Unknown';
+        if (receipt.logs && receipt.logs.length > 0) {
+            try {
+                const transferLog = receipt.logs.find(log => log.topics[0] === ethers.utils.id('Transfer(address,address,uint256)'));
+                if (transferLog) {
+                    tokenId = ethers.BigNumber.from(transferLog.topics[3]).toString();
+                }
+            } catch (parseError) {
+                console.warn('Could not parse token ID from receipt:', parseError);
+            }
+        }
         
-        showNotification(`🎉 NFT Minted Successfully! Token ID: ${tokenId}`, 'success');
+        showNotification(`🎉 NFT Minted to Secure Escrow! Token ID: ${tokenId}`, 'success');
+        showNotification('🔒 Your NFT is safely held in escrow and will be released by the collection creator.', 'info', 8000);
         
         // Update statistics
         ordersServed++;
@@ -773,10 +1131,19 @@ async function mintNFT() {
     } catch (error) {
         console.error('NFT minting error:', error);
         
-        if (error.code === 'ACTION_REJECTED') {
+        // Use Paco's proven error handling patterns
+        if (error.code === 'ACTION_REJECTED' || error.code === 4001) {
             showNotification('❌ Transaction rejected by user', 'error');
-        } else if (error.code === 'INSUFFICIENT_FUNDS') {
+        } else if (error.code === 'INSUFFICIENT_FUNDS' || error.code === -32000) {
             showNotification('❌ Insufficient funds for gas fees', 'error');
+        } else if (error.message?.includes('Internal JSON-RPC error') || 
+                   error.message?.includes('execution reverted') ||
+                   error.code === -32603) {
+            console.log('🚨 Abstract network error detected:', error.message);
+            showNotification('❌ Network error. Please try again in a moment.', 'error');
+        } else if (error.message?.includes('gas') || error.message?.includes('execution reverted')) {
+            console.log('💡 Gas or contract execution issue');
+            showNotification('❌ Transaction failed. Check your balance and try again.', 'error');
         } else {
             showNotification('❌ NFT minting failed. Please try again.', 'error');
         }
@@ -1270,19 +1637,15 @@ function updatePremiumPriceSummary() {
     baseMojoPrice += 100;
     baseUsdPrice += 0.02;
     
-    // Apply 5% platform fee (goes to Paco wallet via environment variable)
-    const platformFeeRate = PLATFORM_FEE_RATE;
-    const platformFeeMojo = Math.round(baseMojoPrice * platformFeeRate);
-    const platformFeeUsd = baseUsdPrice * platformFeeRate;
-    const totalMojoPrice = baseMojoPrice + platformFeeMojo;
-    const totalUsdPrice = baseUsdPrice + platformFeeUsd;
+    // Calculate final pricing
+    const totalMojoPrice = baseMojoPrice;
+    const totalUsdPrice = baseUsdPrice;
     
     // Update total display
     totalMojoElement.textContent = `${formatMojoPrice(totalMojoPrice)} MOJO`;
     totalUsdElement.textContent = `≈ $${totalUsdPrice.toFixed(2)} USD`;
     
     console.log(`Premium order total: ${totalMojoPrice} MOJO (≈ $${totalUsdPrice.toFixed(2)} USD)`);
-    console.log(`Platform fee: ${platformFeeMojo} MOJO (≈ $${platformFeeUsd.toFixed(3)} USD) → Platform wallet`);
 }
 
 // Update the order summary display with MOJO token prices
