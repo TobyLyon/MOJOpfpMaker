@@ -151,7 +151,7 @@ body {
     display: grid;
     grid-template-columns: 1fr 1.2fr;
     gap: 40px;
-    align-items: start;
+    align-items: center;
 }
 
 /* Canvas Container */
