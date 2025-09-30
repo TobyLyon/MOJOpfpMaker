@@ -253,7 +253,8 @@ body {
     padding: 25px;
     box-shadow: var(--glass-shadow);
     height: fit-content;
-    max-height: 70vh;
+    max-height: calc(100vh - var(--header-height) - var(--snowflake-height) - 80px - 350px - 40px);
+    /* 100vh - header - snowflake - margin-top - logo space - padding/gap */
     overflow-y: auto;
     margin-top: 80px; /* Align with top of canvas wrapper (60px gallery title + 20px gap) */
 }
