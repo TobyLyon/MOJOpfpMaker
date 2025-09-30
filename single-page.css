@@ -151,7 +151,7 @@ body {
     display: grid;
     grid-template-columns: 1fr 1.2fr;
     gap: 40px;
-    align-items: center;
+    align-items: start;
 }
 
 /* Canvas Container */
@@ -255,6 +255,7 @@ body {
     height: fit-content;
     max-height: 70vh;
     overflow-y: auto;
+    margin-top: 80px; /* Align with top of canvas wrapper (60px gallery title + 20px gap) */
 }
 
 .traits-header {
