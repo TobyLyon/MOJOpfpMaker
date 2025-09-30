@@ -252,9 +252,8 @@ body {
     border-radius: 20px;
     padding: 25px;
     box-shadow: var(--glass-shadow);
-    align-self: stretch;
-    height: auto;
-    max-height: none;
+    height: fit-content;
+    max-height: 70vh;
     overflow-y: auto;
     margin-top: 80px; /* Align with top of canvas wrapper (60px gallery title + 20px gap) */
 }
