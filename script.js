@@ -424,6 +424,10 @@ async function initializeMojoPricing() {
 
 // Show wallet selection or disconnect if already connected
 async function connectWallet() {
+    // TEMPORARILY DISABLED - Show coming soon message
+    showNotification('🚧 Wallet connection coming soon! Download your MOJO for now.', 'info');
+    return;
+    
     // Check if already connected
     if (userAddress) {
         disconnectWallet();
@@ -572,6 +576,15 @@ function handleChainChanged(chainId) {
 function updateWalletUI(connected) {
     const walletBtn = document.getElementById('walletBtn');
     const mintBtn = document.getElementById('mintBtn');
+    
+    // TEMPORARILY DISABLED - Always show "Coming Soon"
+    walletBtn.innerHTML = '<img src="abstract.png" alt="Abstract" class="wallet-logo" /> 🚧 Coming Soon';
+    walletBtn.classList.remove('connected');
+    mintBtn.disabled = true;
+    mintBtn.textContent = '🚧 Coming Soon';
+    
+    return; // Skip the rest of the function
+    
     const walletLogo = walletBtn.querySelector('.wallet-logo');
     
     if (connected && userAddress) {
@@ -684,6 +697,10 @@ async function uploadMetadataToIPFS(metadata) {
 
 // Main NFT minting function
 async function mintNFT() {
+    // TEMPORARILY DISABLED - Show coming soon message
+    showNotification('🚧 NFT minting coming soon! Download your MOJO for now.', 'info');
+    return;
+    
     try {
         if (!web3Provider || !signer || !userAddress) {
             showNotification('🔒 Please connect your wallet first!', 'error');
@@ -2223,6 +2240,9 @@ function initializeRestaurant() {
         
         // Load saved preferences
         loadPreferences();
+        
+        // Initialize wallet UI to show "Coming Soon"
+        updateWalletUI(false);
         
         // Setup Konami code if function exists
         if (typeof setupKonamiCode === 'function') {
