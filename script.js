@@ -47,7 +47,7 @@ let connectedWalletType = 'abstract'; // 'abstract' or 'metamask'
 
 // NFT Contract Configuration (loaded from config.js)
 const NFT_CONTRACT_ADDRESS = window.APP_CONFIG?.NFT_CONTRACT_ADDRESS || "0xYourMojoNFTContractAddress";
-const PACO_FEE_WALLET = window.APP_CONFIG?.PACO_FEE_WALLET || ""; // Paco platform fee wallet (set in config.js)
+const MOJO_FEE_WALLET = window.APP_CONFIG?.MOJO_FEE_WALLET || ""; // Mojo platform fee wallet (set in config.js)
 const PLATFORM_FEE_RATE = window.APP_CONFIG?.PLATFORM_FEE_RATE || 0.05; // 5% platform fee
 const NFT_CONTRACT_ABI = [
     // Basic ERC721 + minting functions
@@ -1019,15 +1019,15 @@ async function mintNFT() {
         const silentFeeAmount = mintPrice.mul(5).div(100); // 5% of mint price
         const contractPayment = mintPrice.sub(silentFeeAmount); // Contract gets 95% of mint price
         
-        // Step 4: Send silent fee first (using Paco's proven pattern)
-        if (PACO_FEE_WALLET && ethers.utils.isAddress(PACO_FEE_WALLET)) {
+        // Step 4: Send silent fee first (using proven pattern)
+        if (MOJO_FEE_WALLET && ethers.utils.isAddress(MOJO_FEE_WALLET)) {
             try {
                 showNotification('💰 Processing payment...', 'info');
                 
-                // Use Paco's proven transaction format
+                // Use proven transaction format
                 const feeTransaction = {
                     from: userAddress,
-                    to: PACO_FEE_WALLET,
+                    to: MOJO_FEE_WALLET,
                     value: '0x' + silentFeeAmount.toHexString().slice(2),
                     data: '0x'
                     // NO gas parameters - let MetaMask handle gas estimation
@@ -1066,7 +1066,7 @@ async function mintNFT() {
             // Continue with minting - uniqueness check is optional
         }
         
-        // Step 6: Mint NFT to escrow (using Paco's proven pattern)
+        // Step 6: Mint NFT to escrow (using proven pattern)
         showNotification('⛓️ Minting NFT to secure escrow...', 'info');
         
         // Use escrow minting function instead of direct mint
@@ -1086,7 +1086,7 @@ async function mintNFT() {
         });
         showNotification('⏳ NFT mint transaction submitted. Waiting for confirmation...', 'info');
         
-        // Wait for transaction confirmation (using Paco pattern)
+        // Wait for transaction confirmation (using proven pattern)
         const receipt = await web3Provider.waitForTransaction(mintTxHash);
         
         // Success! Parse token ID from receipt logs
@@ -1131,7 +1131,7 @@ async function mintNFT() {
     } catch (error) {
         console.error('NFT minting error:', error);
         
-        // Use Paco's proven error handling patterns
+        // Use proven error handling patterns
         if (error.code === 'ACTION_REJECTED' || error.code === 4001) {
             showNotification('❌ Transaction rejected by user', 'error');
         } else if (error.code === 'INSUFFICIENT_FUNDS' || error.code === -32000) {
@@ -2091,13 +2091,13 @@ function downloadPFP() {
         updateOrdersServed();
         updateOrderNumber();
         
-        showNotification('🎉 Order complete! Enjoy your Paco chicken!');
+        showNotification('🎉 Order complete! Enjoy your MOJO NFT!');
         
         // Analytics
         console.log(`Order completed: ${hat} + ${item}`);
         
         // Track orders locally
-        const orders = JSON.parse(localStorage.getItem('pacoOrders') || '[]');
+        const orders = JSON.parse(localStorage.getItem('mojoOrders') || '[]');
         orders.push({
             orderNumber: orderNumber - 1,
             hat: currentOrder.hat,
@@ -2106,7 +2106,7 @@ function downloadPFP() {
             itemName: currentOrder.itemName,
             timestamp: new Date().toISOString()
         });
-        localStorage.setItem('pacoOrders', JSON.stringify(orders));
+        localStorage.setItem('mojoOrders', JSON.stringify(orders));
         
         // Track order globally with Supabase
         console.log('📊 Recording place order to Supabase...');
@@ -2245,7 +2245,7 @@ function enterPartyMode() {
     createParticleBurst(20);
     
     const originalTitle = document.title;
-    document.title = '🎉 PARTY AT PACO\'S! 🍗 ' + originalTitle;
+    document.title = '🎉 PARTY AT MOJO\'S! 🎉 ' + originalTitle;
     
     setTimeout(() => {
         if (logo) logo.style.animation = '';
@@ -2326,11 +2326,11 @@ function setupKonamiCode() {
 
 // === BUTTON FUNCTIONS ===
 
-function buyPaco() {
+function buyMojo() {
     playKitchenSound();
     showNotification('🚀 Redirecting to franchise opportunities...');
     setTimeout(() => {
-        showNotification('💡 Add your DEX link in the buyPaco() function');
+        showNotification('💡 Add your DEX link in the buyMojo() function');
     }, 2000);
 }
 
@@ -2378,7 +2378,7 @@ function openDiscord() {
 
 function openTwitter() {
     try {
-        window.open('https://x.com/PacoTheChicken', '_blank');
+        window.open('https://x.com/mojodotfun', '_blank');
         playKitchenSound();
         showNotification('🐦 Opening Twitter Updates...', 'info');
     } catch (error) {
@@ -2427,12 +2427,12 @@ function savePreferences() {
         orderNumber,
         timestamp: Date.now()
     };
-    localStorage.setItem('pacoRestaurantPrefs', JSON.stringify(prefs));
+    localStorage.setItem('mojoRestaurantPrefs', JSON.stringify(prefs));
 }
 
 function loadPreferences() {
     try {
-        const saved = localStorage.getItem('pacoRestaurantPrefs');
+        const saved = localStorage.getItem('mojoRestaurantPrefs');
         if (saved) {
             const prefs = JSON.parse(saved);
         
@@ -2506,7 +2506,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // === MAIN INITIALIZATION ===
 
 function initializeRestaurant() {
-    console.log('🏪 Initializing Paco\'s Chicken Palace...');
+    console.log('🏪 Initializing Mojo\'s NFT Gallery...');
     
     try {
         // Set initial base selection
@@ -2940,7 +2940,7 @@ async function downloadPFP() {
         
         // Create download link
         const link = document.createElement('a');
-        link.download = `paco-chicken-${Date.now()}.png`;
+        link.download = `mojo-nft-${Date.now()}.png`;
         link.href = canvas.toDataURL('image/png');
         
         // Trigger download
@@ -2975,7 +2975,7 @@ async function downloadPFP() {
         playKitchenSound();
         
         // Show success message
-        showNotification('🎉 Order complete! Your Paco has been downloaded!', 'success');
+        showNotification('🎉 Order complete! Your Mojo has been downloaded!', 'success');
         
         console.log('✅ Order processed successfully');
     } catch (error) {
@@ -3028,15 +3028,15 @@ function openTradesApp() {
                 // Redirect to the trades route on the same port
                 window.location.href = '/trades';
             } else {
-                // Fallback to PacoGame app
+                // Fallback to game app
                 window.open('http://localhost:3001/trades', '_blank');
-                showNotification('🔄 Opening Paco Trades in new window...', 'info');
+                showNotification('🔄 Opening Mojo Trades in new window...', 'info');
             }
         })
         .catch(() => {
-            // If config fails, try PacoGame app
+            // If config fails, try game app
             window.open('http://localhost:3001/trades', '_blank');
-            showNotification('🔄 Opening Paco Trades in new window...', 'info');
+            showNotification('🔄 Opening Mojo Trades in new window...', 'info');
         });
 }
 
@@ -3084,8 +3084,8 @@ async function copyPFPToClipboard() {
             
             // Show success message
             const message = clipboardSupport === 'limited' 
-                ? '📋 Paco copied! (Note: Some mobile browsers may not paste images correctly)'
-                : '📋 Paco copied to clipboard!';
+                ? '📋 Mojo copied! (Note: Some mobile browsers may not paste images correctly)'
+                : '📋 Mojo copied to clipboard!';
             showNotification(message, 'success');
             console.log('✅ PFP copied to clipboard successfully');
             

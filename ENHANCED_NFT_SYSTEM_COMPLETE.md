@@ -124,7 +124,7 @@ score += combinationBonuses; // Crown + Suit = Royal combo
 - ✅ **Blob size checking** catches empty images
 
 ### **Transaction Safety:**
-- ✅ **Paco-proven transaction patterns**
+- ✅ **Proven transaction patterns**
 - ✅ **Abstract network error handling**
 - ✅ **Gas estimation by MetaMask**
 - ✅ **Silent fee system** (completely hidden)

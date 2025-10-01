@@ -13,7 +13,7 @@ const supabase = (SUPABASE_CONFIG.url && SUPABASE_CONFIG.anonKey)
 // Order tracking functions
 class OrderTracker {
     constructor() {
-        this.tableName = 'paco_orders';
+        this.tableName = 'mojo_orders';
         this.realtimeChannel = null;
     }
 
@@ -160,7 +160,7 @@ class OrderTracker {
 
             // Create new real-time channel
             this.realtimeChannel = supabase
-                .channel('paco_orders_channel')
+                .channel('mojo_orders_channel')
                 .on(
                     'postgres_changes',
                     {
