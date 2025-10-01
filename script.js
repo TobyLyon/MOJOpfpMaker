@@ -2197,10 +2197,12 @@ function clearOrder() {
             playKitchenSound();
     
     // Show notification
-    showNotification('Order cleared! Back to basics 🐔', 'info');
+    showNotification('🗑️ MOJO reset to default', 'success');
     
     console.log('✅ Order cleared successfully');
 }
+
+// Note: Duplicate clearOrder function removed - consolidated above
 
 // === INTERACTIVE ELEMENTS ===
 
@@ -2215,7 +2217,7 @@ function canvasClicked() {
     
     clickCount++;
     if (clickCount === 3) {
-        showNotification('🐔 Your chicken loves the attention!');
+        showNotification('❄️ Your MOJO loves the attention!');
         createParticleBurst(10);
         clickCount = 0;
     }
