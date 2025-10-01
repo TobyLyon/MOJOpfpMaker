@@ -201,8 +201,8 @@ body {
     50% { transform: translateY(-10px); }
 }
 
-/* === PACO SWAP TAB STYLING === */
-.paco-swap-tab {
+/* === MOJO SWAP TAB STYLING === */
+.mojo-swap-tab {
     text-decoration: none;
     display: flex;
     align-items: center;
@@ -1554,7 +1554,7 @@ body {
     object-fit: contain;
 }
 
-/* Jump animation for Paco Jump tab icon */
+/* Jump animation for MOJO Jump tab icon */
 .jump-animation {
     animation: quickJump 1.2s ease-out infinite;
     transform-origin: center bottom;
@@ -3493,12 +3493,12 @@ body {
     transform: scale(1.1);
 }
 
-.social-icon.buy-paco {
+.social-icon.buy-mojo {
     background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(249, 115, 22, 0.2));
     border-color: rgba(251, 191, 36, 0.3);
 }
 
-.social-icon.buy-paco:hover {
+.social-icon.buy-mojo:hover {
     background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(249, 115, 22, 0.3));
     border-color: rgba(251, 191, 36, 0.6);
     color: rgba(251, 191, 36, 1);
@@ -4137,8 +4137,8 @@ body {
 
 }
 
-/* ===== BETA TAG FOR PACO SWAP ===== */
-.paco-swap-tab::after {
+/* ===== BETA TAG FOR MOJO SWAP ===== */
+.mojo-swap-tab::after {
     content: 'BETA';
     position: absolute;
     top: -8px;

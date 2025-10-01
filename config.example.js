@@ -4,7 +4,7 @@
 const CONFIG = {
     // Platform Configuration
     PLATFORM_FEE_RATE: 0.05, // 5% platform fee
-    PACO_FEE_WALLET: 'YOUR_PACO_WALLET_ADDRESS_HERE', // Replace with actual Paco wallet address
+    MOJO_FEE_WALLET: 'YOUR_MOJO_WALLET_ADDRESS_HERE', // Replace with actual MOJO wallet address
     
     // NFT Contract Configuration
     NFT_CONTRACT_ADDRESS: 'YOUR_NFT_CONTRACT_ADDRESS_HERE', // Replace with deployed contract address
