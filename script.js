@@ -1671,7 +1671,11 @@ function randomizePFP() {
 // Clear order and reset to defaults
 function clearOrder() {
     try {
-        // Reset current order to defaults
+        console.log('🗑️ Clearing order and resetting to base only...');
+        
+        // Reset current order to defaults (keep only base)
+        currentOrder.base = 'MOJO';
+        currentOrder.baseName = 'MOJO Base';
         currentOrder.background = '';
         currentOrder.backgroundName = 'No Background';
         currentOrder.clothes = '';
@@ -1683,21 +1687,74 @@ function clearOrder() {
         currentOrder.mouth = 'NORMAL';
         currentOrder.mouthName = 'Normal Mouth';
         
-        // Clear UI selections
-        document.querySelectorAll('.trait-card.selected').forEach(item => {
+        // Clear ALL UI selections (both .trait-card and .menu-item)
+        document.querySelectorAll('.trait-card.selected, .menu-item.selected').forEach(item => {
             item.classList.remove('selected');
         });
         
-        // Update display
-        // Ensure base layer is loaded and redraw
-        ensureBaseLayerLoaded(() => {
-            drawPFP();
-            updateOrderSummary();
-        });
-        showNotification('🗑️ MOJO reset to default');
+        // Select default "none" options for each trait category
+        setTimeout(() => {
+            // Background - select "No Background" option (category is "backgrounds")
+            const noBackgroundElement = document.querySelector('[data-item-id=""][data-category="backgrounds"]');
+            if (noBackgroundElement) {
+                noBackgroundElement.classList.add('selected');
+                console.log('✅ Selected default background');
+            } else {
+                console.log('❌ No background element found');
+            }
+            
+            // Clothes - select "No Clothes" option  
+            const noClothesElement = document.querySelector('[data-item-id=""][data-category="clothes"]');
+            if (noClothesElement) {
+                noClothesElement.classList.add('selected');
+                console.log('✅ Selected default clothes');
+            } else {
+                console.log('❌ No clothes element found');
+            }
+            
+            // Head - select "No Headwear" option (category is "heads")
+            const noHeadElement = document.querySelector('[data-item-id=""][data-category="heads"]');
+            if (noHeadElement) {
+                noHeadElement.classList.add('selected');
+                console.log('✅ Selected default head');
+            } else {
+                console.log('❌ No head element found');
+            }
+            
+            // Eyes - select "Normal Eyes" option
+            const normalEyesElement = document.querySelector('[data-item-id="NORMAL"][data-category="eyes"]');
+            if (normalEyesElement) {
+                normalEyesElement.classList.add('selected');
+                console.log('✅ Selected default eyes');
+            } else {
+                console.log('❌ No eyes element found');
+            }
+            
+            // Mouth - select "Normal Mouth" option (category is "mouths")
+            const normalMouthElement = document.querySelector('[data-item-id="NORMAL"][data-category="mouths"]');
+            if (normalMouthElement) {
+                normalMouthElement.classList.add('selected');
+                console.log('✅ Selected default mouth');
+            } else {
+                console.log('❌ No mouth element found');
+            }
+            
+            // Update PFP display and order summary
+            ensureBaseLayerLoaded(() => {
+                drawPFP();
+                updateOrderSummary();
+            });
+        }, 100);
+        
+        // Play sound and show notification
+        playKitchenSound();
+        showNotification('🗑️ MOJO reset to base only!', 'success');
+        
+        console.log('✅ Order cleared successfully - only base remains');
         
     } catch (error) {
         console.error('Error clearing order:', error);
+        showNotification('❌ Reset failed - please try again', 'error');
     }
 }
 
@@ -1781,52 +1838,6 @@ function downloadPFP() {
     }
 }
 
-// Clear order function
-function clearOrder() {
-    console.log('🗑️ Clearing order...');
-    
-    // Reset selections
-    document.querySelectorAll('.menu-item.selected').forEach(item => {
-        item.classList.remove('selected');
-    });
-    
-    // Reset current order to defaults
-    currentOrder.base = 'MOJO BODY';
-    currentOrder.background = '';
-    currentOrder.backgroundName = 'No Background';
-    currentOrder.clothes = '';
-    currentOrder.clothesName = 'No Clothes';
-    currentOrder.eyes = 'NORMAL';
-    currentOrder.eyesName = 'Normal Eyes';
-    currentOrder.head = '';
-    currentOrder.headName = 'No Headwear';
-    currentOrder.mouth = 'NORMAL';
-    currentOrder.mouthName = 'Normal Mouth';
-    
-    // Select default "none" options
-    setTimeout(() => {
-        const noToppingElement = document.querySelector('[data-item-id=""][data-category="hats"]');
-        if (noToppingElement) {
-            noToppingElement.classList.add('selected');
-        }
-        
-        const noSideElement = document.querySelector('[data-item-id=""][data-category="items"]');
-        if (noSideElement) {
-            noSideElement.classList.add('selected');
-        }
-        
-        // Update PFP and order summary
-        loadBaseImage();
-        updateOrderSummary();
-    }, 50);
-    
-            playKitchenSound();
-    
-    // Show notification
-    showNotification('Order cleared! Back to basics 🐔', 'info');
-    
-    console.log('✅ Order cleared successfully');
-}
 
 // === INTERACTIVE ELEMENTS ===
 
