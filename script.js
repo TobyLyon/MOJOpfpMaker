@@ -2034,6 +2034,8 @@ function randomizePFP() {
 // Clear order and reset to defaults
 function clearOrder() {
     try {
+        console.log('🗑️ Resetting MOJO...');
+        
         // Reset current order to defaults
         currentOrder.background = '';
         currentOrder.backgroundName = 'No Background';
@@ -2046,21 +2048,30 @@ function clearOrder() {
         currentOrder.mouth = 'NORMAL';
         currentOrder.mouthName = 'Normal Mouth';
         
+        // Clear layer images
+        layers.background = null;
+        layers.clothes = null;
+        layers.eyes = null;
+        layers.head = null;
+        layers.mouth = null;
+        
         // Clear UI selections
-        document.querySelectorAll('.trait-card.selected').forEach(item => {
+        document.querySelectorAll('.trait-card.selected, .menu-item.selected').forEach(item => {
             item.classList.remove('selected');
         });
         
-        // Update display
-        // Ensure base layer is loaded and redraw
+        // Reload and redraw
         ensureBaseLayerLoaded(() => {
             drawPFP();
             updateOrderSummary();
+            updateOrderTotal();
         });
-        showNotification('🗑️ MOJO reset to default');
+        
+        showNotification('🗑️ MOJO reset to default', 'success');
         
     } catch (error) {
         console.error('Error clearing order:', error);
+        showNotification('Error resetting MOJO', 'error');
     }
 }
 
