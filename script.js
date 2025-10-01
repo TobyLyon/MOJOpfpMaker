@@ -293,11 +293,11 @@ function playTone(frequency, duration, type = 'sine', volume = 0.1) {
 window.playTone = playTone;
 
 // Restaurant-themed sound effects
-function playChickenSound() {
+function playSoftSelectSound() {
     if (!audioEnabled) return;
-    playTone(400, 0.15);
-    setTimeout(() => playTone(450, 0.1), 150);
-    setTimeout(() => playTone(380, 0.1), 300);
+    // Soft, short, pleasant UI blip
+    playTone(520, 0.08, 'sine', 0.03);
+    setTimeout(() => playTone(660, 0.06, 'sine', 0.02), 90);
 }
 
 function playOrderSound() {
@@ -316,8 +316,8 @@ function playCompleteOrderSound() {
 
 function playKitchenSound() {
     if (!audioEnabled) return;
-    // Sizzling sound
-    playTone(300, 0.3, 'sawtooth', 0.05);
+    // Softer UI tap for non-selection actions
+    playTone(280, 0.06, 'triangle', 0.02);
 }
 
 function playPartySound() {
@@ -1566,7 +1566,7 @@ function drawPFP() {
 // === QUICK ORDERS ===
 
 function quickOrder(hatId, itemId) {
-    playChickenSound();
+    playSoftSelectSound();
     
     // Find the menu items
     const hatItem = menuItems.hats.find(h => h.id === hatId);
@@ -2518,7 +2518,7 @@ function playSound(soundType) {
     try {
         switch(soundType) {
             case 'select':
-                playChickenSound(); // Trait selection gets chicken sound
+                playSoftSelectSound(); // Trait selection gets soft sound
                 break;
             case 'clear':
                 playKitchenSound(); // Clear order gets kitchen sound
@@ -2533,7 +2533,7 @@ function playSound(soundType) {
                 playCompleteOrderSound(); // Welcome gets cash register sound
                 break;
             default:
-                playChickenSound(); // Default to chicken sound
+                playSoftSelectSound(); // Default to soft sound
                 break;
         }
     } catch (e) {
