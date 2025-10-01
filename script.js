@@ -88,107 +88,107 @@ const menuItems = {
         { id: 'TRAIN', name: 'Train', description: 'Moving train', price: 0.25, emoji: '🚂' }
     ],
     clothes: [
-        { id: 'NONE', name: 'None', description: 'No clothing', price: 0, mojoPrice: 0, emoji: '🚫' },
-        { id: 'ABSTRACT KIMONO', name: 'Abstract Kimono', description: 'Artistic wear', price: 1.00, mojoPrice: 1000, emoji: '👘' },
-        { id: 'ABSTRACT SHIRT', name: 'Abstract Shirt', description: 'Modern design', price: 0.75, mojoPrice: 750, emoji: '👕' },
-        { id: 'APRON BLACK', name: 'Black Apron', description: 'Chef style', price: 0.50, mojoPrice: 500, emoji: '👨‍🍳' },
-        { id: 'APRON BLUE', name: 'Blue Apron', description: 'Kitchen pro', price: 0.50, mojoPrice: 500, emoji: '👩‍🍳' },
-        { id: 'BLACK BOWTIE SUIT', name: 'Black Suit', description: 'Formal wear', price: 1.50, mojoPrice: 1500, emoji: '🤵' },
-        { id: 'BLUE SUIT', name: 'Blue Suit', description: 'Business style', price: 1.25, mojoPrice: 1250, emoji: '💼' },
-        { id: 'KIMONO BLACK', name: 'Black Kimono', description: 'Traditional Japanese elegance', price: 1.25, mojoPrice: 1250, emoji: '👘' },
-        { id: 'KIMONO BLUE', name: 'Blue Kimono', description: 'Serene traditional wear', price: 1.25, mojoPrice: 1250, emoji: '👘' },
-        { id: 'KIMONO PINK', name: 'Pink Kimono', description: 'Cherry blossom style', price: 1.25, mojoPrice: 1250, emoji: '👘' },
-        { id: 'KIMONO YELLOW', name: 'Yellow Kimono', description: 'Golden sunrise style', price: 1.25, mojoPrice: 1250, emoji: '👘' },
-        { id: 'PUDGY SHIRT', name: 'Pudgy Shirt', description: 'Cute and comfy', price: 0.75, mojoPrice: 750, emoji: '👕' },
-        { id: 'SCARF BLACK', name: 'Black Scarf', description: 'Cozy winter accessory', price: 0.50, mojoPrice: 500, emoji: '🧣' },
-        { id: 'SCARF GRAY', name: 'Gray Scarf', description: 'Neutral warmth', price: 0.50, mojoPrice: 500, emoji: '🧣' },
-        { id: 'SCARF GREEN', name: 'Green Scarf', description: 'Forest fresh style', price: 0.50, mojoPrice: 500, emoji: '🧣' },
-        { id: 'SCARF RED', name: 'Red Scarf', description: 'Bold winter fashion', price: 0.50, mojoPrice: 500, emoji: '🧣' },
-        { id: 'SCARF YELLOW', name: 'Yellow Scarf', description: 'Sunny winter vibes', price: 0.50, mojoPrice: 500, emoji: '🧣' },
-        { id: 'SHIRT BLACK', name: 'Black Shirt', description: 'Classic casual wear', price: 0.50, mojoPrice: 500, emoji: '👕' },
-        { id: 'SHIRT GRAY', name: 'Gray Shirt', description: 'Comfortable everyday', price: 0.50, mojoPrice: 500, emoji: '👕' },
-        { id: 'SHIRT RED', name: 'Red Shirt', description: 'Bold statement piece', price: 0.50, mojoPrice: 500, emoji: '👕' },
-        { id: 'SHIRT WHITE GREEN', name: 'White Green Shirt', description: 'Fresh color combo', price: 0.60, mojoPrice: 600, emoji: '👕' },
-        { id: 'SHIRT WHITE ORANGE', name: 'White Orange Shirt', description: 'Vibrant design', price: 0.60, mojoPrice: 600, emoji: '👕' },
-        { id: 'SOLANA SHIRT', name: 'Solana Shirt', description: 'Crypto enthusiast gear', price: 0.75, mojoPrice: 750, emoji: '☀️' },
-        { id: 'SUIT', name: 'Formal Suit', description: 'Classic business attire', price: 1.00, mojoPrice: 1000, emoji: '🕴️' },
-        { id: 'TACTICAL SUIT BLACK', name: 'Black Tactical Suit', description: 'Military precision', price: 1.75, mojoPrice: 1750, emoji: '🥷' },
-        { id: 'TACTICAL SUIT BLUE', name: 'Blue Tactical Suit', description: 'Professional operations', price: 1.75, mojoPrice: 1750, emoji: '👮' },
-        { id: 'TACTICAL SUIT CAMO', name: 'Camo Tactical Suit', description: 'Stealth operations', price: 1.75, mojoPrice: 1750, emoji: '🪖' },
-        { id: 'TACTICAL SUIT GREEN', name: 'Green Tactical Suit', description: 'Field operations', price: 1.75, mojoPrice: 1750, emoji: '🎖️' },
-        { id: 'TURTLE NECK BLACK', name: 'Black Turtleneck', description: 'Sleek modern style', price: 0.75, mojoPrice: 750, emoji: '🐢' },
-        { id: 'TURTLE NECK GRAY', name: 'Gray Turtleneck', description: 'Sophisticated comfort', price: 0.75, mojoPrice: 750, emoji: '🐢' },
-        { id: 'TURTLE NECK GREEN', name: 'Green Turtleneck', description: 'Nature-inspired style', price: 0.75, mojoPrice: 750, emoji: '🐢' },
-        { id: 'TURTLE NECK RED', name: 'Red Turtleneck', description: 'Bold fashion choice', price: 0.75, mojoPrice: 750, emoji: '🐢' },
-        { id: 'TURTLE NECK WHITE', name: 'White Turtleneck', description: 'Clean minimalist look', price: 0.75, mojoPrice: 750, emoji: '🐢' }
+        { id: 'NONE', name: 'None', description: 'No clothing', price: 0, emoji: '🚫' },
+        { id: 'ABSTRACT KIMONO', name: 'Abstract Kimono', description: 'Artistic wear', price: 1.00, emoji: '👘' },
+        { id: 'ABSTRACT SHIRT', name: 'Abstract Shirt', description: 'Modern design', price: 0.75, emoji: '👕' },
+        { id: 'APRON BLACK', name: 'Black Apron', description: 'Chef style', price: 0.50, emoji: '👨‍🍳' },
+        { id: 'APRON BLUE', name: 'Blue Apron', description: 'Kitchen pro', price: 0.50, emoji: '👩‍🍳' },
+        { id: 'BLACK BOWTIE SUIT', name: 'Black Suit', description: 'Formal wear', price: 1.50, emoji: '🤵' },
+        { id: 'BLUE SUIT', name: 'Blue Suit', description: 'Business style', price: 1.25, emoji: '💼' },
+        { id: 'KIMONO BLACK', name: 'Black Kimono', description: 'Traditional Japanese elegance', price: 1.25, emoji: '👘' },
+        { id: 'KIMONO BLUE', name: 'Blue Kimono', description: 'Serene traditional wear', price: 1.25, emoji: '👘' },
+        { id: 'KIMONO PINK', name: 'Pink Kimono', description: 'Cherry blossom style', price: 1.25, emoji: '👘' },
+        { id: 'KIMONO YELLOW', name: 'Yellow Kimono', description: 'Golden sunrise style', price: 1.25, emoji: '👘' },
+        { id: 'PUDGY SHIRT', name: 'Pudgy Shirt', description: 'Cute and comfy', price: 0.75, emoji: '👕' },
+        { id: 'SCARF BLACK', name: 'Black Scarf', description: 'Cozy winter accessory', price: 0.50, emoji: '🧣' },
+        { id: 'SCARF GRAY', name: 'Gray Scarf', description: 'Neutral warmth', price: 0.50, emoji: '🧣' },
+        { id: 'SCARF GREEN', name: 'Green Scarf', description: 'Forest fresh style', price: 0.50, emoji: '🧣' },
+        { id: 'SCARF RED', name: 'Red Scarf', description: 'Bold winter fashion', price: 0.50, emoji: '🧣' },
+        { id: 'SCARF YELLOW', name: 'Yellow Scarf', description: 'Sunny winter vibes', price: 0.50, emoji: '🧣' },
+        { id: 'SHIRT BLACK', name: 'Black Shirt', description: 'Classic casual wear', price: 0.50, emoji: '👕' },
+        { id: 'SHIRT GRAY', name: 'Gray Shirt', description: 'Comfortable everyday', price: 0.50, emoji: '👕' },
+        { id: 'SHIRT RED', name: 'Red Shirt', description: 'Bold statement piece', price: 0.50, emoji: '👕' },
+        { id: 'SHIRT WHITE GREEN', name: 'White Green Shirt', description: 'Fresh color combo', price: 0.60, emoji: '👕' },
+        { id: 'SHIRT WHITE ORANGE', name: 'White Orange Shirt', description: 'Vibrant design', price: 0.60, emoji: '👕' },
+        { id: 'SOLANA SHIRT', name: 'Solana Shirt', description: 'Crypto enthusiast gear', price: 0.75, emoji: '☀️' },
+        { id: 'SUIT', name: 'Formal Suit', description: 'Classic business attire', price: 1.00, emoji: '🕴️' },
+        { id: 'TACTICAL SUIT BLACK', name: 'Black Tactical Suit', description: 'Military precision', price: 1.75, emoji: '🥷' },
+        { id: 'TACTICAL SUIT BLUE', name: 'Blue Tactical Suit', description: 'Professional operations', price: 1.75, emoji: '👮' },
+        { id: 'TACTICAL SUIT CAMO', name: 'Camo Tactical Suit', description: 'Stealth operations', price: 1.75, emoji: '🪖' },
+        { id: 'TACTICAL SUIT GREEN', name: 'Green Tactical Suit', description: 'Field operations', price: 1.75, emoji: '🎖️' },
+        { id: 'TURTLE NECK BLACK', name: 'Black Turtleneck', description: 'Sleek modern style', price: 0.75, emoji: '🐢' },
+        { id: 'TURTLE NECK GRAY', name: 'Gray Turtleneck', description: 'Sophisticated comfort', price: 0.75, emoji: '🐢' },
+        { id: 'TURTLE NECK GREEN', name: 'Green Turtleneck', description: 'Nature-inspired style', price: 0.75, emoji: '🐢' },
+        { id: 'TURTLE NECK RED', name: 'Red Turtleneck', description: 'Bold fashion choice', price: 0.75, emoji: '🐢' },
+        { id: 'TURTLE NECK WHITE', name: 'White Turtleneck', description: 'Clean minimalist look', price: 0.75, emoji: '🐢' }
     ],
     eyes: [
-        { id: 'NORMAL', name: 'Normal Eyes', description: 'Standard friendly look', price: 0, mojoPrice: 0, emoji: '👀' },
-        { id: 'ANGRY', name: 'Angry Eyes', description: 'Fierce and determined', price: 0.50, mojoPrice: 500, emoji: '😠' },
-        { id: 'BORED', name: 'Bored Eyes', description: 'Unimpressed expression', price: 0.50, mojoPrice: 500, emoji: '😑' },
-        { id: 'CLEAR GLASS', name: 'Clear Glasses', description: 'Intellectual vibes', price: 0.75, mojoPrice: 750, emoji: '🤓' },
-        { id: 'CLOSE', name: 'Closed Eyes', description: 'Peaceful meditation', price: 0.50, mojoPrice: 500, emoji: '😌' },
-        { id: 'EYE SHINE', name: 'Eye Shine', description: 'Bright and alert', price: 0.75, mojoPrice: 750, emoji: '✨' },
-        { id: 'GLASSES BLACK', name: 'Black Glasses', description: 'Cool and smart', price: 0.75, mojoPrice: 750, emoji: '😎' },
-        { id: 'GLASSES BLUE', name: 'Blue Glasses', description: 'Stylish blue frames', price: 0.75, mojoPrice: 750, emoji: '🔵' },
-        { id: 'GLASSES GREEN', name: 'Green Glasses', description: 'Nature-inspired frames', price: 0.75, mojoPrice: 750, emoji: '🟢' },
-        { id: 'GLASSES ORANGE', name: 'Orange Glasses', description: 'Bold orange style', price: 0.75, mojoPrice: 750, emoji: '🟠' },
-        { id: 'GLASSES YELLOW', name: 'Yellow Glasses', description: 'Sunny yellow frames', price: 0.75, mojoPrice: 750, emoji: '🟡' },
-        { id: 'HUH', name: 'Confused Eyes', description: 'Puzzled expression', price: 0.50, mojoPrice: 500, emoji: '🤔' },
-        { id: 'LOWE LID', name: 'Lower Lid', description: 'Sleepy expression', price: 0.50, mojoPrice: 500, emoji: '😪' },
-        { id: 'SAD', name: 'Sad Eyes', description: 'Melancholy mood', price: 0.50, mojoPrice: 500, emoji: '😢' },
-        { id: 'SQUINT', name: 'Squinting Eyes', description: 'Focused concentration', price: 0.50, mojoPrice: 500, emoji: '😤' },
-        { id: 'STAR SHINE', name: 'Star Shine', description: 'Magical sparkle', price: 1.00, mojoPrice: 1000, emoji: '✨' },
-        { id: 'SURPRISED', name: 'Surprised Eyes', description: 'Wide-eyed wonder', price: 0.50, mojoPrice: 500, emoji: '😲' },
-        { id: 'TEARY', name: 'Teary Eyes', description: 'Emotional moment', price: 0.50, mojoPrice: 500, emoji: '🥺' },
-        { id: 'WINK', name: 'Winking Eye', description: 'Playful charm', price: 0.50, mojoPrice: 500, emoji: '😉' }
+        { id: 'NORMAL', name: 'Normal Eyes', description: 'Standard friendly look', price: 0, emoji: '👀' },
+        { id: 'ANGRY', name: 'Angry Eyes', description: 'Fierce and determined', price: 0.50, emoji: '😠' },
+        { id: 'BORED', name: 'Bored Eyes', description: 'Unimpressed expression', price: 0.50, emoji: '😑' },
+        { id: 'CLEAR GLASS', name: 'Clear Glasses', description: 'Intellectual vibes', price: 0.75, emoji: '🤓' },
+        { id: 'CLOSE', name: 'Closed Eyes', description: 'Peaceful meditation', price: 0.50, emoji: '😌' },
+        { id: 'EYE SHINE', name: 'Eye Shine', description: 'Bright and alert', price: 0.75, emoji: '✨' },
+        { id: 'GLASSES BLACK', name: 'Black Glasses', description: 'Cool and smart', price: 0.75, emoji: '😎' },
+        { id: 'GLASSES BLUE', name: 'Blue Glasses', description: 'Stylish blue frames', price: 0.75, emoji: '🔵' },
+        { id: 'GLASSES GREEN', name: 'Green Glasses', description: 'Nature-inspired frames', price: 0.75, emoji: '🟢' },
+        { id: 'GLASSES ORANGE', name: 'Orange Glasses', description: 'Bold orange style', price: 0.75, emoji: '🟠' },
+        { id: 'GLASSES YELLOW', name: 'Yellow Glasses', description: 'Sunny yellow frames', price: 0.75, emoji: '🟡' },
+        { id: 'HUH', name: 'Confused Eyes', description: 'Puzzled expression', price: 0.50, emoji: '🤔' },
+        { id: 'LOWE LID', name: 'Lower Lid', description: 'Sleepy expression', price: 0.50, emoji: '😪' },
+        { id: 'SAD', name: 'Sad Eyes', description: 'Melancholy mood', price: 0.50, emoji: '😢' },
+        { id: 'SQUINT', name: 'Squinting Eyes', description: 'Focused concentration', price: 0.50, emoji: '😤' },
+        { id: 'STAR SHINE', name: 'Star Shine', description: 'Magical sparkle', price: 1.00, emoji: '✨' },
+        { id: 'SURPRISED', name: 'Surprised Eyes', description: 'Wide-eyed wonder', price: 0.50, emoji: '😲' },
+        { id: 'TEARY', name: 'Teary Eyes', description: 'Emotional moment', price: 0.50, emoji: '🥺' },
+        { id: 'WINK', name: 'Winking Eye', description: 'Playful charm', price: 0.50, emoji: '😉' }
     ],
     heads: [
-        { id: '', name: 'No Headwear', description: 'Clean and minimal look', price: 0, mojoPrice: 0, emoji: '🚫' },
-        { id: 'Beanie Black', name: 'Black Beanie', description: 'Cozy winter warmth', price: 0.50, mojoPrice: 500, emoji: '🧣' },
-        { id: 'Beanie Blue', name: 'Blue Beanie', description: 'Cool arctic style', price: 0.50, mojoPrice: 500, emoji: '🧣' },
-        { id: 'Beanie Green', name: 'Green Beanie', description: 'Forest fresh style', price: 0.50, mojoPrice: 500, emoji: '🧣' },
-        { id: 'Beanie Orange', name: 'Orange Beanie', description: 'Vibrant autumn vibes', price: 0.50, mojoPrice: 500, emoji: '🧣' },
-        { id: 'Beanie Red', name: 'Red Beanie', description: 'Bold winter style', price: 0.50, mojoPrice: 500, emoji: '🧣' },
-        { id: 'BIKER HELMET', name: 'Biker Helmet', description: 'Road warrior protection', price: 1.25, mojoPrice: 1250, emoji: '🏍️' },
-        { id: 'Cap Black', name: 'Black Cap', description: 'Classic street style', price: 0.75, mojoPrice: 750, emoji: '🧢' },
-        { id: 'Cap Blue', name: 'Blue Cap', description: 'Casual blue style', price: 0.75, mojoPrice: 750, emoji: '🧢' },
-        { id: 'Cap Red', name: 'Red Cap', description: 'Bold statement piece', price: 0.75, mojoPrice: 750, emoji: '🧢' },
-        { id: 'CROWN GOLD', name: 'Golden Crown', description: 'Royal MOJO status', price: 2.00, mojoPrice: 2000, emoji: '👑' },
-        { id: 'CROWN GREEN', name: 'Emerald Crown', description: 'Mystical royalty', price: 2.00, mojoPrice: 2000, emoji: '👑' },
-        { id: 'CROWN RED', name: 'Ruby Crown', description: 'Fiery leadership', price: 2.00, mojoPrice: 2000, emoji: '👑' },
-        { id: 'FISH', name: 'Fish Hat', description: 'Aquatic adventure', price: 1.00, mojoPrice: 1000, emoji: '🐟' },
-        { id: 'FISHERMAN HAT', name: 'Fisherman Hat', description: 'Deep sea explorer', price: 0.75, mojoPrice: 750, emoji: '🎣' },
-        { id: 'MOJI', name: 'MOJI Special', description: 'Signature MOJO style', price: 1.50, mojoPrice: 1500, emoji: '🎯' },
-        { id: 'Newsboy Black', name: 'Black Newsboy', description: 'Vintage newspaper style', price: 0.75, mojoPrice: 750, emoji: '📰' },
-        { id: 'Newsboy Brown', name: 'Brown Newsboy', description: 'Classic brown leather', price: 0.75, mojoPrice: 750, emoji: '📰' },
-        { id: 'Party Hat Green', name: 'Green Party Hat', description: 'Celebration time', price: 0.60, mojoPrice: 600, emoji: '🎉' },
-        { id: 'Party Hat Orange', name: 'Orange Party Hat', description: 'Festive orange style', price: 0.60, mojoPrice: 600, emoji: '🎉' },
-        { id: 'Party Hat Red', name: 'Red Party Hat', description: 'Bold party vibes', price: 0.60, mojoPrice: 600, emoji: '🎉' },
-        { id: 'Snapback Black', name: 'Black Snapback', description: 'Urban street style', price: 0.75, mojoPrice: 750, emoji: '🧢' },
-        { id: 'Snapback Blue', name: 'Blue Snapback', description: 'Urban arctic style', price: 0.75, mojoPrice: 750, emoji: '🧢' },
-        { id: 'Snapback Gray', name: 'Gray Snapback', description: 'Neutral urban style', price: 0.75, mojoPrice: 750, emoji: '🧢' },
-        { id: 'Snapback Red', name: 'Red Snapback', description: 'Bold urban statement', price: 0.75, mojoPrice: 750, emoji: '🧢' },
-        { id: 'SNOW', name: 'Snow Hat', description: 'Winter wonderland style', price: 0.60, mojoPrice: 600, emoji: '❄️' },
-        { id: 'SUSHI', name: 'Sushi Hat', description: 'Japanese delicacy', price: 1.25, mojoPrice: 1250, emoji: '🍣' },
+        { id: '', name: 'No Headwear', description: 'Clean and minimal look', price: 0, emoji: '🚫' },
+        { id: 'Beanie Black', name: 'Black Beanie', description: 'Cozy winter warmth', price: 0.50, emoji: '🧣' },
+        { id: 'Beanie Blue', name: 'Blue Beanie', description: 'Cool arctic style', price: 0.50, emoji: '🧣' },
+        { id: 'Beanie Green', name: 'Green Beanie', description: 'Forest fresh style', price: 0.50, emoji: '🧣' },
+        { id: 'Beanie Orange', name: 'Orange Beanie', description: 'Vibrant autumn vibes', price: 0.50, emoji: '🧣' },
+        { id: 'Beanie Red', name: 'Red Beanie', description: 'Bold winter style', price: 0.50, emoji: '🧣' },
+        { id: 'BIKER HELMET', name: 'Biker Helmet', description: 'Road warrior protection', price: 1.25, emoji: '🏍️' },
+        { id: 'Cap Black', name: 'Black Cap', description: 'Classic street style', price: 0.75, emoji: '🧢' },
+        { id: 'Cap Blue', name: 'Blue Cap', description: 'Casual blue style', price: 0.75, emoji: '🧢' },
+        { id: 'Cap Red', name: 'Red Cap', description: 'Bold statement piece', price: 0.75, emoji: '🧢' },
+        { id: 'CROWN GOLD', name: 'Golden Crown', description: 'Royal MOJO status', price: 2.00, emoji: '👑' },
+        { id: 'CROWN GREEN', name: 'Emerald Crown', description: 'Mystical royalty', price: 2.00, emoji: '👑' },
+        { id: 'CROWN RED', name: 'Ruby Crown', description: 'Fiery leadership', price: 2.00, emoji: '👑' },
+        { id: 'FISH', name: 'Fish Hat', description: 'Aquatic adventure', price: 1.00, emoji: '🐟' },
+        { id: 'FISHERMAN HAT', name: 'Fisherman Hat', description: 'Deep sea explorer', price: 0.75, emoji: '🎣' },
+        { id: 'MOJI', name: 'MOJI Special', description: 'Signature MOJO style', price: 1.50, emoji: '🎯' },
+        { id: 'Newsboy Black', name: 'Black Newsboy', description: 'Vintage newspaper style', price: 0.75, emoji: '📰' },
+        { id: 'Newsboy Brown', name: 'Brown Newsboy', description: 'Classic brown leather', price: 0.75, emoji: '📰' },
+        { id: 'Party Hat Green', name: 'Green Party Hat', description: 'Celebration time', price: 0.60, emoji: '🎉' },
+        { id: 'Party Hat Orange', name: 'Orange Party Hat', description: 'Festive orange style', price: 0.60, emoji: '🎉' },
+        { id: 'Party Hat Red', name: 'Red Party Hat', description: 'Bold party vibes', price: 0.60, emoji: '🎉' },
+        { id: 'Snapback Black', name: 'Black Snapback', description: 'Urban street style', price: 0.75, emoji: '🧢' },
+        { id: 'Snapback Blue', name: 'Blue Snapback', description: 'Urban arctic style', price: 0.75, emoji: '🧢' },
+        { id: 'Snapback Gray', name: 'Gray Snapback', description: 'Neutral urban style', price: 0.75, emoji: '🧢' },
+        { id: 'Snapback Red', name: 'Red Snapback', description: 'Bold urban statement', price: 0.75, emoji: '🧢' },
+        { id: 'SNOW', name: 'Snow Hat', description: 'Winter wonderland style', price: 0.60, emoji: '❄️' },
+        { id: 'SUSHI', name: 'Sushi Hat', description: 'Japanese delicacy', price: 1.25, emoji: '🍣' },
         { id: 'THREAD BLACK', name: 'Black Thread', description: 'Minimalist thread style', price: 0.40, mojoPrice: 400, emoji: '🧵' },
         { id: 'THREAD GREEN', name: 'Green Thread', description: 'Nature thread style', price: 0.40, mojoPrice: 400, emoji: '🧵' },
         { id: 'THREAD RED', name: 'Red Thread', description: 'Bold thread accent', price: 0.40, mojoPrice: 400, emoji: '🧵' },
         { id: 'THREAD YELLOW', name: 'Yellow Thread', description: 'Bright thread style', price: 0.40, mojoPrice: 400, emoji: '🧵' },
-        { id: 'VIKING HELMET BLACK', name: 'Black Viking Helmet', description: 'Nordic warrior', price: 1.75, mojoPrice: 1750, emoji: '⚔️' },
-        { id: 'VIKING HELMET BROWN', name: 'Brown Viking Helmet', description: 'Ancient warrior', price: 1.75, mojoPrice: 1750, emoji: '⚔️' }
+        { id: 'VIKING HELMET BLACK', name: 'Black Viking Helmet', description: 'Nordic warrior', price: 1.75, emoji: '⚔️' },
+        { id: 'VIKING HELMET BROWN', name: 'Brown Viking Helmet', description: 'Ancient warrior', price: 1.75, emoji: '⚔️' }
     ],
     mouths: [
-        { id: 'NORMAL', name: 'Normal Mouth', description: 'Friendly expression', price: 0, mojoPrice: 0, emoji: '😊' },
+        { id: 'NORMAL', name: 'Normal Mouth', description: 'Friendly expression', price: 0, emoji: '😊' },
         { id: 'GRIN', name: 'Big Grin', description: 'Happy and excited', price: 0.25, mojoPrice: 250, emoji: '😁' },
         { id: 'MEH', name: 'Meh Expression', description: 'Unimpressed look', price: 0.25, mojoPrice: 250, emoji: '😐' },
-        { id: 'OOHH', name: 'Surprised Ooh', description: 'Amazed reaction', price: 0.50, mojoPrice: 500, emoji: '😮' },
-        { id: 'OPEN MOUTH', name: 'Open Mouth', description: 'Shocked expression', price: 0.50, mojoPrice: 500, emoji: '😲' },
-        { id: 'POUT', name: 'Pouty Lips', description: 'Cute disappointed look', price: 0.50, mojoPrice: 500, emoji: '😤' },
+        { id: 'OOHH', name: 'Surprised Ooh', description: 'Amazed reaction', price: 0.50, emoji: '😮' },
+        { id: 'OPEN MOUTH', name: 'Open Mouth', description: 'Shocked expression', price: 0.50, emoji: '😲' },
+        { id: 'POUT', name: 'Pouty Lips', description: 'Cute disappointed look', price: 0.50, emoji: '😤' },
         { id: 'SAD', name: 'Sad Mouth', description: 'Melancholy mood', price: 0.25, mojoPrice: 250, emoji: '😢' },
-        { id: 'SIDE GRIN', name: 'Side Grin', description: 'Mischievous smile', price: 0.50, mojoPrice: 500, emoji: '😏' },
-        { id: 'TOOTHPICK', name: 'Toothpick', description: 'Cool and casual', price: 0.75, mojoPrice: 750, emoji: '😎' },
-        { id: 'TOUNGE', name: 'Tongue Out', description: 'Playful and silly', price: 0.50, mojoPrice: 500, emoji: '😛' }
+        { id: 'SIDE GRIN', name: 'Side Grin', description: 'Mischievous smile', price: 0.50, emoji: '😏' },
+        { id: 'TOOTHPICK', name: 'Toothpick', description: 'Cool and casual', price: 0.75, emoji: '😎' },
+        { id: 'TOUNGE', name: 'Tongue Out', description: 'Playful and silly', price: 0.50, emoji: '😛' }
     ]
 };
 
@@ -375,29 +375,10 @@ function formatMojoPrice(mojoAmount) {
     return `${mojoAmount.toLocaleString()} MOJO`;
 }
 
-// Update all pricing displays to show MOJO tokens
+// Update all pricing displays - DISABLED
 function updatePricingDisplay() {
-    // Update menu items display
-    document.querySelectorAll('.menu-item').forEach(item => {
-        const itemId = item.getAttribute('data-value');
-        const category = item.getAttribute('data-category');
-        
-        if (category && itemId !== undefined) {
-            const menuItem = findMenuItem(itemId, category);
-            if (menuItem) {
-                const priceElement = item.querySelector('.item-price');
-                if (priceElement) {
-                    const mojoPrice = convertToMojoPrice(menuItem.price);
-                    priceElement.textContent = formatMojoPrice(mojoPrice);
-                    priceElement.style.color = 'var(--mojo-ice-blue)';
-                    priceElement.style.fontWeight = '600';
-                }
-            }
-        }
-    });
-    
-    // Update order summary
-    updateOrderSummary();
+    // PRICING DISABLED - No longer showing MOJO prices
+    return;
 }
 
 // Find menu item by ID and category
@@ -988,8 +969,7 @@ function createMenuItem(category, item) {
     menuItem.setAttribute('tabindex', '0');
     menuItem.setAttribute('aria-label', `Select ${item.name} for your MOJO`);
     
-    // Calculate MOJO price dynamically
-    const mojoPrice = convertToMojoPrice(item.price);
+    // PRICING DISABLED - No longer calculating MOJO prices
     
     // Thumbnail support (show actual asset preview where available)
     const folderMapByCategory = {
@@ -1007,7 +987,6 @@ function createMenuItem(category, item) {
         <div class="trait-content">
             ${hasThumb ? `<img class=\"trait-thumb\" src=\"${thumbSrc}\" alt=\"${item.name}\">` : ''}
             <div class="trait-name">${item.name}</div>
-            <div class="trait-price">${formatMojoPrice(mojoPrice)} MOJO</div>
         </div>
     `;
     
@@ -1259,47 +1238,10 @@ function calculateOrderTotal() {
     return parseUserAmount(totalElement.textContent);
 }
 
-// Update the premium price summary display with 5% platform fee
+// Update the premium price summary display - DISABLED
 function updatePremiumPriceSummary() {
-    const totalMojoElement = document.getElementById('totalMojoPrice');
-    const totalUsdElement = document.getElementById('totalUsdPrice');
-    
-    if (!totalMojoElement || !totalUsdElement) {
-        console.log('Premium price summary elements not found');
-        return;
-    }
-    
-    let baseMojoPrice = 500; // Base MOJO price for the NFT
-    let baseUsdPrice = 0.10; // Base USD price
-    
-    // Add selected traits
-    Object.entries(currentOrder).forEach(([category, itemId]) => {
-        if (itemId && itemId !== 'none' && itemId !== 'normal' && itemId !== 'NONE' && itemId !== 'NORMAL' && itemId !== '') {
-            const item = findMenuItem(category, itemId);
-            if (item) {
-                baseMojoPrice += item.mojoPrice || 0;
-                baseUsdPrice += item.price || 0;
-            }
-        }
-    });
-    
-    // Add gas fee estimate
-    baseMojoPrice += 100;
-    baseUsdPrice += 0.02;
-    
-    // Apply 5% platform fee (goes to MOJO wallet via environment variable)
-    const platformFeeRate = PLATFORM_FEE_RATE;
-    const platformFeeMojo = Math.round(baseMojoPrice * platformFeeRate);
-    const platformFeeUsd = baseUsdPrice * platformFeeRate;
-    const totalMojoPrice = baseMojoPrice + platformFeeMojo;
-    const totalUsdPrice = baseUsdPrice + platformFeeUsd;
-    
-    // Update total display
-    totalMojoElement.textContent = `${formatMojoPrice(totalMojoPrice)} MOJO`;
-    totalUsdElement.textContent = `≈ $${totalUsdPrice.toFixed(2)} USD`;
-    
-    console.log(`Premium order total: ${totalMojoPrice} MOJO (≈ $${totalUsdPrice.toFixed(2)} USD)`);
-    console.log(`Platform fee: ${platformFeeMojo} MOJO (≈ $${platformFeeUsd.toFixed(3)} USD) → Platform wallet`);
+    // PRICING DISABLED - No longer showing MOJO prices
+    return;
 }
 
 // Update the order summary display with MOJO token prices
@@ -1331,11 +1273,11 @@ function updateOrderSummary() {
                 <div class="item-qty">1</div>
                 <div class="item-name">MOJO Base</div>
             </div>
-            <div class="item-price">${formatMojoPrice(baseMojoPrice)}</div>
+            <div class="item-price">Free</div>
         `;
         orderItemsContainer.appendChild(baseItem);
         subtotalUSD += basePrice;
-        subtotalMOJO += baseMojoPrice;
+        // PRICING DISABLED - No longer tracking MOJO prices
     }
     
     // Add hat/topping
@@ -1422,13 +1364,13 @@ function updateOrderSummary() {
                 <div class="item-qty">1</div>
                 <div class="item-name">Gas Fee</div>
             </div>
-            <div class="item-price">${formatMojoPrice(gasFeeMOJO)}</div>
+            <div class="item-price">Free</div>
         `;
         orderItemsContainer.appendChild(gasItem);
     }
     
-    if (subtotalElement) subtotalElement.textContent = formatMojoPrice(subtotalMOJO);
-    if (totalElement) totalElement.textContent = formatMojoPrice(totalMOJO);
+    if (subtotalElement) subtotalElement.textContent = 'Free';
+    if (totalElement) totalElement.textContent = 'Free';
     
     // Update order count
     updateOrdersServed();
