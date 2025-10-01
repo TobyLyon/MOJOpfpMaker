@@ -3,7 +3,7 @@
 ## 🚨 IMPORTANT SECURITY NOTES
 
 ### ⚠️ Wallet Address Protection
-- **NEVER** commit the actual Paco wallet address to version control
+- **NEVER** commit the actual MOJO wallet address to version control
 - **NEVER** expose sensitive wallet addresses in frontend code
 - **ALWAYS** use the configuration system for sensitive data
 
@@ -25,7 +25,7 @@ Edit `config.js` and replace placeholder values:
 ```javascript
 const CONFIG = {
     PLATFORM_FEE_RATE: 0.05, // 5% platform fee
-    PACO_FEE_WALLET: '0x6Dc7277Da5842041f4af527Fe6f6A209EF03BED4', // ✅ Real address
+    MOJO_FEE_WALLET: '0x6Dc7277Da5842041f4af527Fe6f6A209EF03BED4', // ✅ Real address
     NFT_CONTRACT_ADDRESS: 'YOUR_DEPLOYED_CONTRACT_ADDRESS', // ✅ Replace this
     // ... other config
 };
@@ -58,7 +58,7 @@ python -m http.server 8080
 
 ### Platform Settings
 - `PLATFORM_FEE_RATE`: Percentage fee (0.05 = 5%)
-- `PACO_FEE_WALLET`: Destination for platform fees
+- `MOJO_FEE_WALLET`: Destination for platform fees
 
 ### Contract Settings
 - `NFT_CONTRACT_ADDRESS`: Your deployed ERC-721 contract
@@ -90,7 +90,7 @@ python -m http.server 8080
 - Verify `window.APP_CONFIG` exists in console
 
 ### Wallet Connection Issues
-- Ensure `PACO_FEE_WALLET` is set in config
+- Ensure `MOJO_FEE_WALLET` is set in config
 - Check network configuration matches MetaMask
 - Verify contract address is correct
 
