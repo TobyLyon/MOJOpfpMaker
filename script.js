@@ -294,9 +294,8 @@ window.playTone = playTone;
 
 // Restaurant-themed sound effects
 function playSoftSelectSound() {
-    if (!audioEnabled) return;
-    // Extremely soft, low click - barely audible
-    playTone(440, 0.03, 'sine', 0.01);
+    // Sound disabled
+    return;
 }
 
 function playOrderSound() {
