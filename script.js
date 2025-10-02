@@ -295,9 +295,8 @@ window.playTone = playTone;
 // Restaurant-themed sound effects
 function playSoftSelectSound() {
     if (!audioEnabled) return;
-    // Soft, short, pleasant UI blip
-    playTone(520, 0.08, 'sine', 0.03);
-    setTimeout(() => playTone(660, 0.06, 'sine', 0.02), 90);
+    // Very soft, short tap sound for trait selection
+    playTone(600, 0.04, 'sine', 0.015);
 }
 
 function playOrderSound() {
