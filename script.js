@@ -295,8 +295,8 @@ window.playTone = playTone;
 // Restaurant-themed sound effects
 function playSoftSelectSound() {
     if (!audioEnabled) return;
-    // Very soft, short tap sound for trait selection
-    playTone(600, 0.04, 'sine', 0.015);
+    // Extremely soft, low click - barely audible
+    playTone(440, 0.03, 'sine', 0.01);
 }
 
 function playOrderSound() {
